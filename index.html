@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1, h2 {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Current Time: <span id="currentTime"></span></h1>
+    <h2>You are in: <span id="currentBlock"></span></h2>
+    <h2>Time Remaining: <span id="timeRemaining"></span></h2>
+
+    <script>
+        const schedule = [
+            { start: "08:45", end: "09:12", name: "Pomodoro 1" },
+            { start: "09:12", end: "09:18", name: "Short Break" },
+            { start: "09:18", end: "09:45", name: "Pomodoro 2" },
+            { start: "09:45", end: "09:51", name: "Short Break" },
+            { start: "09:51", end: "10:18", name: "Pomodoro 3" },
+            { start: "10:18", end: "10:28", name: "Long Break" },
+            { start: "10:28", end: "10:55", name: "Pomodoro 4" },
+            { start: "10:55", end: "11:01", name: "Short Break" },
+            { start: "11:01", end: "11:28", name: "Pomodoro 5" },
+            { start: "11:28", end: "11:34", name: "Short Break" },
+            { start: "11:34", end: "12:01", name: "Pomodoro 6" }
+        ];
+
+        function updateTime() {
+            const now = new Date();
+            const currentTime = now.toTimeString().split(" ")[0].slice(0, 5);
+            document.getElementById("currentTime").innerText = currentTime;
+
+            let currentBlock = "Outside Schedule";
+            let timeRemaining = "";
+
+            for (const block of schedule) {
+                if (currentTime >= block.start && currentTime < block.end) {
+                    currentBlock = block.name;
+
+                    const endTime = new Date(now);
+                    const [endHours, endMinutes] = block.end.split(":");
+                    endTime.setHours(endHours);
+                    endTime.setMinutes(endMinutes);
+                    endTime.setSeconds(0);
+
+                    const diff = endTime - now;
+                    const minutes = Math.floor(diff / 1000 / 60);
+                    const seconds = Math.floor((diff / 1000) % 60);
+
+                    timeRemaining = `${minutes} minutes and ${seconds < 10 ? '0' : ''}${seconds} seconds`;
+                    break;
+                }
+            }
+
+            document.getElementById("currentBlock").innerText = currentBlock;
+            document.getElementById("timeRemaining").innerText = timeRemaining;
+
+            setTimeout(updateTime, 1000); // Update every second
+        }
+
+        updateTime();
+    </script>
+</body>
+</html>
