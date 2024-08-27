@@ -4,126 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pomodoro Timer (CST)</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: background-color 0.5s ease;
-        }
-        .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        #timer {
-            font-size: 6em;
-            margin: 20px 0;
-        }
-        #currentTime, #currentBlock, #nextBlock {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Pomodoro Timer (CST)</h1>
-        <div id="currentTime">Current Time: --:--:-- CST</div>
-        <div id="timer">--:--</div>
-        <div id="currentBlock">Current: --</div>
-        <div id="nextBlock">Next: --</div>
-    </div>
-    <script>
-        const schedule = [
-            { start: "08:45", end: "09:12", name: "Pomodoro 1" },
-            { start: "09:12", end: "09:18", name: "Short Break" },
-            { start: "09:18", end: "09:45", name: "Pomodoro 2" },
-            { start: "09:45", end: "09:51", name: "Short Break" },
-            { start: "09:51", end: "10:18", name: "Pomodoro 3" },
-            { start: "10:18", end: "10:28", name: "Long Break" },
-            { start: "10:28", end: "10:55", name: "Pomodoro 4" },
-            { start: "10:55", end: "11:01", name: "Short Break" },
-            { start: "11:01", end: "11:28", name: "Pomodoro 5" },
-            { start: "11:28", end: "11:34", name: "Short Break" },
-            { start: "11:34", end: "12:01", name: "Pomodoro 6" }
-        ];
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
-        let previousBlockName = "";
-        function getCSTTime() {
-            const now = new Date();
-            const cstTime = new Date(now.toLocaleString("en-US", {timeZone: "America/Chicago"}));
-            return cstTime;
-        }
-        function formatTime(date) {
-            return date.toTimeString().split(' ')[0];
-        }
-        function updateTimer() {
-            const now = getCSTTime();
-            const currentTimeString = formatTime(now);
-            document.getElementById('currentTime').textContent = `Current Time: ${currentTimeString} CST`;
-            let currentBlock = { name: "Outside Schedule", end: "00:00" };
-            let nextBlock = { name: "Outside Schedule" };
-            for (let i = 0; i < schedule.length; i++) {
-                const block = schedule[i];
-                const [startHour, startMinute] = block.start.split(':');
-                const [endHour, endMinute] = block.end.split(':');
-                const blockStart = new Date(now);
-                blockStart.setHours(startHour, startMinute, 0, 0);
-                const blockEnd = new Date(now);
-                blockEnd.setHours(endHour, endMinute, 0, 0);
-                if (now >= blockStart && now < blockEnd) {
-                    currentBlock = block;
-                    nextBlock = schedule[(i + 1) % schedule.length];
-                    break;
-                }
-            }
-            if (currentBlock.name !== previousBlockName) {
-                changeBackgroundColor();
-                previousBlockName = currentBlock.name;
-            }
-            const [endHour, endMinute] = currentBlock.end.split(':');
-            const endTime = new Date(now);
-            endTime.setHours(endHour, endMinute, 0, 0);
-            const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('currentBlock').textContent = `Current: ${currentBlock.name}`;
-            document.getElementById('nextBlock').textContent = `Next: ${nextBlock.name}`;
-            setTimeout(updateTimer, 1000);
-        }
-        function changeBackgroundColor() {
-            const newColor = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.backgroundColor = newColor;
-        }
-        updateTimer();
-    </script>
-</body>
-</html>
-
-
-
-
-
-
-9:53
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer (CST)</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -137,7 +17,7 @@
             transition: background-color 0.5s ease;
             color: white;
         }
-        .container {
+        #pomodoro-container {
             background-color: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             padding: 20px;
@@ -165,14 +45,24 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Pomodoro Timer (CST)</h1>
-        <div id="currentTime"><span class="label">Current:</span> --:--:-- CST</div>
-        <div id="timer">--:--</div>
-        <div id="currentBlock"><span class="label">Current:</span> --</div>
-        <div id="nextBlock"><span class="label">Next:</span> --</div>
-    </div>
     <script>
+    (function() {
+        // Check if the timer already exists
+        if (document.getElementById('pomodoro-container')) {
+            console.log('Pomodoro timer already exists. Skipping creation.');
+            return;
+        }
+        // Create the container and add it to the body
+        const container = document.createElement('div');
+        container.id = 'pomodoro-container';
+        container.innerHTML = `
+            <h1>Pomodoro Timer (CST)</h1>
+            <div id="currentTime"><span class="label">Current:</span> --:--:-- CST</div>
+            <div id="timer">--:--</div>
+            <div id="currentBlock"><span class="label">Current:</span> --</div>
+            <div id="nextBlock"><span class="label">Next:</span> --</div>
+        `;
+        document.body.appendChild(container);
         const schedule = [
             { start: "08:45", end: "09:12", name: "Pomodoro 1" },
             { start: "09:12", end: "09:18", name: "Short Break" },
@@ -236,6 +126,7 @@
             document.body.style.backgroundColor = newColor;
         }
         updateTimer();
+    })();
     </script>
 </body>
 </html>
