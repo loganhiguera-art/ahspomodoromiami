@@ -14,7 +14,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: background-color 0.5s ease;
+            transition: background-color 1s ease;
             color: white;
         }
         #pomodoro-container {
@@ -23,6 +23,7 @@
             padding: 20px;
             text-align: center;
             width: 300px;
+            transition: transform 0.5s ease, opacity 0.5s ease;
         }
         h1 {
             font-size: 1.8em;
@@ -47,12 +48,10 @@
 <body>
     <script>
     (function() {
-        // Check if the timer already exists
         if (document.getElementById('pomodoro-container')) {
             console.log('Pomodoro timer already exists. Skipping creation.');
             return;
         }
-        // Create the container and add it to the body
         const container = document.createElement('div');
         container.id = 'pomodoro-container';
         container.innerHTML = `
@@ -76,15 +75,39 @@
             { start: "11:28", end: "11:34", name: "Short Break" },
             { start: "11:34", end: "12:01", name: "Pomodoro 6" }
         ];
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', // Common colors
+            '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA', // Less common
+            '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3', // Rare colors
+            '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'  // Very rare colors
+        ];
+        const transitions = [
+            { name: 'fade', apply: (el) => { el.style.opacity = 0; setTimeout(() => { el.style.opacity = 1; }, 50); } },
+            { name: 'slideUp', apply: (el) => { el.style.transform = 'translateY(20px)'; setTimeout(() => { el.style.transform = 'translateY(0)'; }, 50); } },
+            { name: 'slideDown', apply: (el) => { el.style.transform = 'translateY(-20px)'; setTimeout(() => { el.style.transform = 'translateY(0)'; }, 50); } },
+            { name: 'zoomIn', apply: (el) => { el.style.transform = 'scale(0.9)'; setTimeout(() => { el.style.transform = 'scale(1)'; }, 50); } },
+            { name: 'zoomOut', apply: (el) => { el.style.transform = 'scale(1.1)'; setTimeout(() => { el.style.transform = 'scale(1)'; }, 50); } },
+            { name: 'rotate', apply: (el) => { el.style.transform = 'rotate(5deg)'; setTimeout(() => { el.style.transform = 'rotate(0)'; }, 50); } }
+        ];
         let previousBlockName = "";
+        let currentColor = "";
         function getCSTTime() {
-            const now = new Date();
-            const cstTime = new Date(now.toLocaleString("en-US", {timeZone: "America/Chicago"}));
-            return cstTime;
+            return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
         }
         function formatTime(date) {
             return date.toTimeString().split(' ')[0];
+        }
+        function changeBackgroundColor() {
+            let newColor;
+            do {
+                newColor = colors[Math.floor(Math.random() * colors.length)];
+            } while (newColor === currentColor);
+            currentColor = newColor;
+            document.body.style.backgroundColor = currentColor;
+        }
+        function applyTransition() {
+            const transition = transitions[Math.floor(Math.random() * transitions.length)];
+            transition.apply(document.getElementById('pomodoro-container'));
         }
         function updateTimer() {
             const now = getCSTTime();
@@ -96,10 +119,8 @@
                 const block = schedule[i];
                 const [startHour, startMinute] = block.start.split(':');
                 const [endHour, endMinute] = block.end.split(':');
-                const blockStart = new Date(now);
-                blockStart.setHours(startHour, startMinute, 0, 0);
-                const blockEnd = new Date(now);
-                blockEnd.setHours(endHour, endMinute, 0, 0);
+                const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
+                const blockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
                 if (now >= blockStart && now < blockEnd) {
                     currentBlock = block;
                     nextBlock = schedule[(i + 1) % schedule.length];
@@ -108,11 +129,11 @@
             }
             if (currentBlock.name !== previousBlockName) {
                 changeBackgroundColor();
+                applyTransition();
                 previousBlockName = currentBlock.name;
             }
             const [endHour, endMinute] = currentBlock.end.split(':');
-            const endTime = new Date(now);
-            endTime.setHours(endHour, endMinute, 0, 0);
+            const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
             const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
@@ -120,10 +141,6 @@
             document.getElementById('currentBlock').innerHTML = `<span class="label">Current:</span> ${currentBlock.name}`;
             document.getElementById('nextBlock').innerHTML = `<span class="label">Next:</span> ${nextBlock.name}`;
             setTimeout(updateTimer, 1000);
-        }
-        function changeBackgroundColor() {
-            const newColor = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.backgroundColor = newColor;
         }
         updateTimer();
     })();
