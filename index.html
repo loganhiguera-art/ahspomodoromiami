@@ -41,10 +41,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Current Time: <span id="currentTime"></span> CST/CDT</h1>
+        <h1>Current Time: <span id="currentTime"></span> CST</h1>
         <h2>You are in: <span id="currentBlock"></span></h2>
         <h2>Time Remaining: <span id="timeRemaining"></span></h2>
     </div>
+
+    <!-- Bell Sound for Breaks -->
+    <audio id="bellSound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
 
     <script>
         const schedule = [
@@ -61,33 +64,55 @@
             { start: "11:34", end: "12:01", name: "Pomodoro 6" }
         ];
 
+        let previousBlock = "";
+
         function updateTime() {
             const now = new Date();
-            
-            // Convert to Chicago time
+
+            // Convert to Chicago time (CST)
             const options = { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const chicagoTimeString = new Intl.DateTimeFormat('en-US', options).format(now);
-            
-            document.getElementById("currentTime").innerText = chicagoTimeString.slice(0, 5);
+            const chicagoTime = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+            const currentTimeString = `${chicagoTime[0].value}:${chicagoTime[2].value}:${chicagoTime[4].value}`;
+
+            // Display the current time in HH:MM format
+            document.getElementById("currentTime").innerText = currentTimeString.slice(0, 5);
 
             let currentBlock = "Outside Schedule";
             let timeRemaining = "";
 
             for (const block of schedule) {
-                if (chicagoTimeString >= block.start && chicagoTimeString < block.end) {
+                const [startHours, startMinutes] = block.start.split(":");
+                const [endHours, endMinutes] = block.end.split(":");
+
+                // Convert schedule times to Date objects in CST
+                const startTime = new Date(now);
+                startTime.setHours(startHours);
+                startTime.setMinutes(startMinutes);
+                startTime.setSeconds(0);
+                startTime.setMilliseconds(0);
+
+                const endTime = new Date(now);
+                endTime.setHours(endHours);
+                endTime.setMinutes(endMinutes);
+                endTime.setSeconds(0);
+                endTime.setMilliseconds(0);
+
+                if (now >= startTime && now < endTime) {
                     currentBlock = block.name;
 
-                    const endTime = new Date(now);
-                    const [endHours, endMinutes] = block.end.split(":");
-                    endTime.setHours(endHours);
-                    endTime.setMinutes(endMinutes);
-                    endTime.setSeconds(0);
+                    // Play bell sound if block changes
+                    if (currentBlock !== previousBlock && previousBlock !== "") {
+                        document.getElementById('bellSound').play();
+                    }
 
+                    previousBlock = currentBlock;
+
+                    // Calculate the time remaining in the block
                     const diff = endTime - now;
                     const minutes = Math.floor(diff / 1000 / 60);
                     const seconds = Math.floor((diff / 1000) % 60);
 
-                    timeRemaining = `${minutes} minutes and ${seconds < 10 ? '0' : ''}${seconds} seconds`;
+                    timeRemaining = `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds < 10 ? '0' : ''}${seconds} seconds`;
                     break;
                 }
             }
