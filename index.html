@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Current Time: <span id="currentTime"></span> CST</h1>
+        <h1>Current Time: <span id="currentTime"></span> CST/CDT</h1>
         <h2>You are in: <span id="currentBlock"></span></h2>
         <h2>Time Remaining: <span id="timeRemaining"></span></h2>
     </div>
@@ -63,26 +63,27 @@
 
         function updateTime() {
             const now = new Date();
-            const offset = -6; // CST is UTC-6
-            const utc = now.getTime() + (now.getTimezoneOffset() * 6000);
-            const cst = new Date(utc + (3600000 * offset));
-            const currentTime = cst.toTimeString().split(" ")[0].slice(0, 5);
-            document.getElementById("currentTime").innerText = currentTime;
+            
+            // Convert to Chicago time
+            const options = { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const chicagoTimeString = new Intl.DateTimeFormat('en-US', options).format(now);
+            
+            document.getElementById("currentTime").innerText = chicagoTimeString.slice(0, 5);
 
             let currentBlock = "Outside Schedule";
             let timeRemaining = "";
 
             for (const block of schedule) {
-                if (currentTime >= block.start && currentTime < block.end) {
+                if (chicagoTimeString >= block.start && chicagoTimeString < block.end) {
                     currentBlock = block.name;
 
-                    const endTime = new Date(cst);
+                    const endTime = new Date(now);
                     const [endHours, endMinutes] = block.end.split(":");
                     endTime.setHours(endHours);
                     endTime.setMinutes(endMinutes);
                     endTime.setSeconds(0);
 
-                    const diff = endTime - cst;
+                    const diff = endTime - now;
                     const minutes = Math.floor(diff / 1000 / 60);
                     const seconds = Math.floor((diff / 1000) % 60);
 
