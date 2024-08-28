@@ -144,19 +144,19 @@
 
     <script>
     (function() {
-    const schedule = [
-        { start: "08:45", end: "09:12", name: "Pomodoro 1" },
-        { start: "09:12", end: "09:18", name: "Short Break" },
-        { start: "09:18", end: "09:45", name: "Pomodoro 2" },
-        { start: "09:45", end: "09:51", name: "Short Break" },
-        { start: "09:51", end: "10:18", name: "Pomodoro 3" },
-        { start: "10:18", end: "10:28", name: "Long Break" },
-        { start: "10:28", end: "10:55", name: "Pomodoro 4" },
-        { start: "10:55", end: "11:01", name: "Short Break" },
-        { start: "11:01", end: "11:28", name: "Pomodoro 5" },
-        { start: "11:28", end: "11:34", name: "Short Break" },
-        { start: "11:34", end: "12:01", name: "Pomodoro 6" }
-    ];
+        const schedule = [
+            { start: "08:45", end: "09:12", name: "Pomodoro 1" },
+            { start: "09:12", end: "09:18", name: "Short Break" },
+            { start: "09:18", end: "09:45", name: "Pomodoro 2" },
+            { start: "09:45", end: "09:51", name: "Short Break" },
+            { start: "09:51", end: "10:18", name: "Pomodoro 3" },
+            { start: "10:18", end: "10:28", name: "Long Break" },
+            { start: "10:28", end: "10:55", name: "Pomodoro 4" },
+            { start: "10:55", end: "11:01", name: "Short Break" },
+            { start: "11:01", end: "11:28", name: "Pomodoro 5" },
+            { start: "11:28", end: "11:34", name: "Short Break" },
+            { start: "11:34", end: "12:01", name: "Pomodoro 6" }
+        ];
         const colors = [
             '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
             '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
@@ -188,7 +188,7 @@
             const container = document.getElementById('pomodoro-container');
             const animation = animations[Math.floor(Math.random() * animations.length)];
             container.classList.add(animation);
-            
+
             setTimeout(() => {
                 container.classList.remove(animation);
                 changeBackgroundColor();
@@ -196,110 +196,115 @@
         }
 
         function updateTimer() {
-    const now = getCSTTime();
-    const currentTimeString = formatTime(now);
-    document.getElementById('currentTime').innerHTML = `<span class="label">Current:</span> ${currentTimeString}`;
-    
-    let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-    let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-    let isWithinSchedule = false;
+            const now = getCSTTime();
+            const currentTimeString = formatTime(now);
+            document.getElementById('currentTime').innerHTML = `<span class="label">Current:</span> ${currentTimeString}`;
 
-    // Find the current block and next block
-    for (let i = 0; i < schedule.length; i++) {
-        const block = schedule[i];
-        const [startHour, startMinute] = block.start.split(':');
-        const [endHour, endMinute] = block.end.split(':');
-        const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-        const blockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
-        
-        if (now >= blockStart && now < blockEnd) {
-            currentBlock = {
-                ...block,
-                start: formatTime(blockStart),
-                end: formatTime(blockEnd)
-            };
-            const nextBlockRaw = schedule[(i + 1) % schedule.length];
-            const nextBlockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextBlockRaw.start.split(':')[0], nextBlockRaw.start.split(':')[1]);
-            const nextBlockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextBlockRaw.end.split(':')[0], nextBlockRaw.end.split(':')[1]);
-            nextBlock = {
-                ...nextBlockRaw,
-                start: formatTime(nextBlockStart),
-                end: formatTime(nextBlockEnd)
-            };
-            isWithinSchedule = true;
-            break;
-        }
-    }
-    if (!isWithinSchedule) {
-        for (let i = 0; i < schedule.length; i++) {
-            const block = schedule[i];
-            const [startHour, startMinute] = block.start.split(':');
-            const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-            
-            if (blockStart > now) {
-                nextBlock = {
-                    ...block,
-                    start: formatTime(blockStart),
-                    end: formatTime(new Date(now.getFullYear(), now.getMonth(), now.getDate(), block.end.split(':')[0], block.end.split(':')[1]))
-                };
-                break;
+            let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+            let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+            let isWithinSchedule = false;
+
+            // Find the current block and next block
+            for (let i = 0; i < schedule.length; i++) {
+                const block = schedule[i];
+                const [startHour, startMinute] = block.start.split(':').map(Number);
+                const [endHour, endMinute] = block.end.split(':').map(Number);
+                const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
+                const blockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
+
+                if (now >= blockStart && now < blockEnd) {
+                    currentBlock = {
+                        ...block,
+                        start: formatTime(blockStart),
+                        end: formatTime(blockEnd)
+                    };
+                    const nextBlockRaw = schedule[(i + 1) % schedule.length];
+                    const [nextStartHour, nextStartMinute] = nextBlockRaw.start.split(':').map(Number);
+                    const [nextEndHour, nextEndMinute] = nextBlockRaw.end.split(':').map(Number);
+                    const nextBlockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextStartHour, nextStartMinute);
+                    const nextBlockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextEndHour, nextEndMinute);
+                    nextBlock = {
+                        ...nextBlockRaw,
+                        start: formatTime(nextBlockStart),
+                        end: formatTime(nextBlockEnd)
+                    };
+                    isWithinSchedule = true;
+                    break;
+                }
             }
+
+            if (!isWithinSchedule) {
+                for (let i = 0; i < schedule.length; i++) {
+                    const block = schedule[i];
+                    const [startHour, startMinute] = block.start.split(':').map(Number);
+                    const [endHour, endMinute] = block.end.split(':').map(Number);
+                    const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
+
+                    if (blockStart > now) {
+                        nextBlock = {
+                            ...block,
+                            start: formatTime(blockStart),
+                            end: formatTime(new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute))
+                        };
+                        break;
+                    }
+                }
+            }
+
+            if (currentBlock.name !== previousBlockName) {
+                applyAnimation();
+                previousBlockName = currentBlock.name;
+            }
+
+            let timeLeft;
+            if (isWithinSchedule) {
+                const [endHour, endMinute] = currentBlock.end.split(':').map(Number);
+                const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
+                timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+            } else {
+                // Find the next scheduled block
+                const nextScheduledBlock = schedule.find(block => {
+                    const [startHour, startMinute] = block.start.split(':').map(Number);
+                    const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
+                    return blockStart > now;
+                });
+
+                if (nextScheduledBlock) {
+                    const [startHour, startMinute] = nextScheduledBlock.start.split(':').map(Number);
+                    const nextStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
+                    timeLeft = Math.max(0, Math.floor((nextStartTime - now) / 1000));
+                } else {
+                    // If no next block found, set timeLeft to 0
+                    timeLeft = 0;
+                }
+            }
+
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Update activity timeline
+            const currentActivityEl = document.getElementById('currentActivity');
+            const nextActivityEl = document.getElementById('nextActivity');
+
+            currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
+            currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
+
+            nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
+            nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
+
+            // Schedule the next update to occur at the next schedule change or every second when outside the schedule
+            let nextUpdateTime;
+            if (isWithinSchedule) {
+                const [endHour, endMinute] = currentBlock.end.split(':').map(Number);
+                nextUpdateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
+            } else {
+                nextUpdateTime = new Date(now.getTime() + 1000); // Update every second when outside schedule
+            }
+
+            const msUntilNextUpdate = nextUpdateTime - now;
+            setTimeout(updateTimer, msUntilNextUpdate);
         }
-    }
-    if (currentBlock.name !== previousBlockName) {
-        applyAnimation();
-        previousBlockName = currentBlock.name;
-    }
-
-    let timeLeft;
-    if (isWithinSchedule) {
-        const [endHour, endMinute] = currentBlock.end.split(':');
-        const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
-        timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
-    } else {
-        // Find the next scheduled block
-        const nextScheduledBlock = schedule.find(block => {
-            const [startHour, startMinute] = block.start.split(':');
-            const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-            return blockStart > now;
-        });
-
-        if (nextScheduledBlock) {
-            const [startHour, startMinute] = nextScheduledBlock.start.split(':');
-            const nextStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-            timeLeft = Math.max(0, Math.floor((nextStartTime - now) / 1000));
-        } else {
-            // If no next block found, set timeLeft to 0
-            timeLeft = 0;
-        }
-    }
-
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    // Update activity timeline
-    const currentActivityEl = document.getElementById('currentActivity');
-    const nextActivityEl = document.getElementById('nextActivity');
-    
-    currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
-    currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
-    
-    nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
-    nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
-
-    // Schedule the next update to occur at the next schedule change or every second when outside the schedule
-    let nextUpdateTime;
-    if (isWithinSchedule) {
-        const [endHour, endMinute] = currentBlock.end.split(':');
-        nextUpdateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
-    } else {
-        nextUpdateTime = new Date(now.getTime() + 1000); // Update every second when outside schedule
-    }
-
-    const msUntilNextUpdate = nextUpdateTime - now;
-    setTimeout(updateTimer, msUntilNextUpdate);
-}
 
         updateTimer();
     })();
