@@ -122,6 +122,130 @@
             animation: explode 1s forwards;
         }
     </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Fredoka', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 1s ease;
+            color: white;
+        }
+        #pomodoro-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            width: 350px;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        #timer {
+            font-size: 4.5em;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        #currentTime {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        #activityTimeline {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .activity {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .activity-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .current-activity {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .current-activity .activity-indicator {
+            background-color: #4CAF50;
+        }
+        .next-activity .activity-indicator {
+            background-color: #FFC107;
+        }
+        .activity-name {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .activity-time {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Animation: Grow */
+        @keyframes grow {
+            0% { transform: scale(1); }
+            100% { transform: scale(50); opacity: 0; }
+        }
+        .grow-animation {
+            animation: grow 2s forwards;
+        }
+
+        /* Animation: Fall */
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+        .fall-animation {
+            animation: fall 2s forwards;
+        }
+
+        /* Animation: Roll */
+        @keyframes roll {
+            0% { transform: rotate(0deg) translateX(0); }
+            100% { transform: rotate(720deg) translateX(100vw); }
+        }
+        .roll-animation {
+            animation: roll 2s forwards;
+        }
+
+        /* Animation: Explode */
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .explode-animation {
+            animation: explode 1s forwards;
+        }
+    </style>
 </head>
 <body>
     <div id="pomodoro-container">
@@ -195,10 +319,17 @@
             }, 2000);
         }
 
+        function parseTimeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
         function updateTimer() {
             const now = getCSTTime();
             const currentTimeString = formatTime(now);
             document.getElementById('currentTime').innerHTML = `<span class="label">Current:</span> ${currentTimeString}`;
+
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
             let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
             let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
@@ -207,45 +338,22 @@
             // Find the current block and next block
             for (let i = 0; i < schedule.length; i++) {
                 const block = schedule[i];
-                const [startHour, startMinute] = block.start.split(':').map(Number);
-                const [endHour, endMinute] = block.end.split(':').map(Number);
-                const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-                const blockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
+                const startMinutes = parseTimeToMinutes(block.start);
+                const endMinutes = parseTimeToMinutes(block.end);
 
-                if (now >= blockStart && now < blockEnd) {
-                    currentBlock = {
-                        ...block,
-                        start: formatTime(blockStart),
-                        end: formatTime(blockEnd)
-                    };
-                    const nextBlockRaw = schedule[(i + 1) % schedule.length];
-                    const [nextStartHour, nextStartMinute] = nextBlockRaw.start.split(':').map(Number);
-                    const [nextEndHour, nextEndMinute] = nextBlockRaw.end.split(':').map(Number);
-                    const nextBlockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextStartHour, nextStartMinute);
-                    const nextBlockEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), nextEndHour, nextEndMinute);
-                    nextBlock = {
-                        ...nextBlockRaw,
-                        start: formatTime(nextBlockStart),
-                        end: formatTime(nextBlockEnd)
-                    };
+                if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+                    currentBlock = block;
+                    nextBlock = schedule[(i + 1) % schedule.length];
                     isWithinSchedule = true;
                     break;
                 }
             }
 
             if (!isWithinSchedule) {
-                for (let i = 0; i < schedule.length; i++) {
-                    const block = schedule[i];
-                    const [startHour, startMinute] = block.start.split(':').map(Number);
-                    const [endHour, endMinute] = block.end.split(':').map(Number);
-                    const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-
-                    if (blockStart > now) {
-                        nextBlock = {
-                            ...block,
-                            start: formatTime(blockStart),
-                            end: formatTime(new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute))
-                        };
+                // Find the next block
+                for (let block of schedule) {
+                    if (parseTimeToMinutes(block.start) > currentMinutes) {
+                        nextBlock = block;
                         break;
                     }
                 }
@@ -258,25 +366,11 @@
 
             let timeLeft;
             if (isWithinSchedule) {
-                const [endHour, endMinute] = currentBlock.end.split(':').map(Number);
-                const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
-                timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+                const endMinutes = parseTimeToMinutes(currentBlock.end);
+                timeLeft = (endMinutes - currentMinutes) * 60;
             } else {
-                // Find the next scheduled block
-                const nextScheduledBlock = schedule.find(block => {
-                    const [startHour, startMinute] = block.start.split(':').map(Number);
-                    const blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-                    return blockStart > now;
-                });
-
-                if (nextScheduledBlock) {
-                    const [startHour, startMinute] = nextScheduledBlock.start.split(':').map(Number);
-                    const nextStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMinute);
-                    timeLeft = Math.max(0, Math.floor((nextStartTime - now) / 1000));
-                } else {
-                    // If no next block found, set timeLeft to 0
-                    timeLeft = 0;
-                }
+                const nextStartMinutes = parseTimeToMinutes(nextBlock.start);
+                timeLeft = ((nextStartMinutes - currentMinutes + 1440) % 1440) * 60;
             }
 
             const minutes = Math.floor(timeLeft / 60);
@@ -293,17 +387,8 @@
             nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
             nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
 
-            // Schedule the next update to occur at the next schedule change or every second when outside the schedule
-            let nextUpdateTime;
-            if (isWithinSchedule) {
-                const [endHour, endMinute] = currentBlock.end.split(':').map(Number);
-                nextUpdateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHour, endMinute);
-            } else {
-                nextUpdateTime = new Date(now.getTime() + 1000); // Update every second when outside schedule
-            }
-
-            const msUntilNextUpdate = nextUpdateTime - now;
-            setTimeout(updateTimer, msUntilNextUpdate);
+            // Schedule the next update
+            setTimeout(updateTimer, 1000);
         }
 
         updateTimer();
@@ -311,3 +396,4 @@
     </script>
 </body>
 </html>
+
