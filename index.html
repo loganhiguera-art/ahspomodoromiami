@@ -277,155 +277,225 @@
 
     <script>
     (function() {
-        const schedule = [
-            { start: "08:45", end: "09:12", name: "Pomodoro 1" },
-            { start: "09:12", end: "09:18", name: "Short Break" },
-            { start: "09:18", end: "09:45", name: "Pomodoro 2" },
-            { start: "09:45", end: "09:51", name: "Short Break" },
-            { start: "09:51", end: "10:18", name: "Pomodoro 3" },
-            { start: "10:18", end: "10:28", name: "Long Break" },
-            { start: "10:28", end: "10:55", name: "Pomodoro 4" },
-            { start: "10:55", end: "11:01", name: "Short Break" },
-            { start: "11:01", end: "11:28", name: "Pomodoro 5" },
-            { start: "11:28", end: "11:34", name: "Short Break" },
-            { start: "11:34", end: "12:01", name: "Pomodoro 6" }
-        ];
-        const colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-            '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
-            '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3',
-            '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'
-        ];
-        const animations = ['grow-animation', 'fall-animation', 'roll-animation', 'explode-animation'];
-        let previousBlockName = "";
-        let currentColor = "";
+    const schedule = {
+        Monday: [
+            { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+            { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+            { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+            { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+            { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+            { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+            { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+            { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+            { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+            { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+            { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+            { start: "12:00 PM", end: "12:25 PM", name: "Lunch" },
+            { start: "12:25 PM", end: "12:55 PM", name: "Lead Labs" },
+            { start: "12:55 PM", end: "1:00 PM", name: "Break" },
+            { start: "1:00 PM", end: "3:45 PM", name: "AlphaX" },
+            { start: "3:45 PM", end: "8:45 AM", name: "Free Time" }
+        ],
+        Tuesday: [
+            { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+            { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+            { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+            { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+            { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+            { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+            { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+            { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+            { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+            { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+            { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+            { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+            { start: "12:45 PM", end: "3:45 PM", name: "AlphaX" },
+            { start: "3:45 PM", end: "8:45 AM", name: "Free Time" }
+        ],
+        Wednesday: [
+            { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+            { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+            { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+            { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+            { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+            { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+            { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+            { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+            { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+            { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+            { start: "11:34 AM", end: "11:50 AM", name: "Pomodoro 6" },
+            { start: "11:50 AM", end: "12:15 PM", name: "Lunch" },
+            { start: "12:15 PM", end: "1:45 PM", name: "Alpha Outings" },
+            { start: "1:45 PM", end: "3:45 PM", name: "AlphaX" },
+            { start: "3:45 PM", end: "8:45 AM", name: "Free Time" }
+        ],
+        Thursday: [
+            { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+            { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+            { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+            { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+            { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+            { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+            { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+            { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+            { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+            { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+            { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+            { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+            { start: "12:45 PM", end: "3:45 PM", name: "AlphaX" },
+            { start: "3:45 PM", end: "8:45 AM", name: "Free Time" }
+        ],
+        Friday: [
+            { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+            { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+            { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+            { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+            { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+            { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+            { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+            { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+            { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+            { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+            { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+            { start: "12:00 PM", end: "12:25 PM", name: "Lunch" },
+            { start: "12:25 PM", end: "12:55 PM", name: "Lead Labs" },
+            { start: "12:55 PM", end: "1:00 PM", name: "Break" },
+            { start: "1:00 PM", end: "3:10 PM", name: "AlphaX" },
+            { start: "3:15 PM", end: "3:55 PM", name: "Accountability Presentation" },
+            { start: "3:55 PM", end: "8:45 AM", name: "Free Time" }
+        ],
+        Saturday: [
+            { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
+        ],
+        Sunday: [
+            { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
+        ]
+    };
 
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
+        '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3',
+        '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'
+    ];
+    const animations = ['grow-animation', 'fall-animation', 'roll-animation', 'explode-animation'];
+    let previousBlockName = "";
+    let currentColor = "";
 
-        function getCSTTime() {
-            return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
-        }
-
-
-        function formatTime(date) {
-            return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        }
-
-
-        function changeBackgroundColor() {
-            let newColor;
-            do {
-                newColor = colors[Math.floor(Math.random() * colors.length)];
-            } while (newColor === currentColor);
-            currentColor = newColor;
-            document.body.style.backgroundColor = currentColor;
-        }
-
-
-        function applyAnimation() {
-            const container = document.getElementById('pomodoro-container');
-            const animation = animations[Math.floor(Math.random() * animations.length)];
-            container.classList.add(animation);
-
-
-            setTimeout(() => {
-                container.classList.remove(animation);
-                changeBackgroundColor();
-            }, 2000);
-        }
-
-
-        function parseTimeToMinutes(timeString) {
-            const [hours, minutes] = timeString.split(':').map(Number);
-            return hours * 60 + minutes;
-        }
-
-
-        function updateTimer() {
-    const now = getCSTTime();
-    const currentTimeString = formatTime(now);
-    document.getElementById('currentTime').innerHTML = `<span class="label">Current:</span> ${currentTimeString}`;
-
-
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const currentSeconds = now.getSeconds();
-
-
-    let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-    let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-    let isWithinSchedule = false;
-
-
-    // Find the current block and next block
-    for (let i = 0; i < schedule.length; i++) {
-        const block = schedule[i];
-        const startMinutes = parseTimeToMinutes(block.start);
-        const endMinutes = parseTimeToMinutes(block.end);
-
-
-        if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
-            currentBlock = block;
-            nextBlock = schedule[(i + 1) % schedule.length];
-            isWithinSchedule = true;
-            break;
-        }
+    function getCSTTime() {
+        return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
     }
 
+    function formatTime(date) {
+        return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
 
-    if (!isWithinSchedule) {
-        // Find the next block
-        for (let block of schedule) {
-            if (parseTimeToMinutes(block.start) > currentMinutes) {
-                nextBlock = block;
+    function changeBackgroundColor() {
+        let newColor;
+        do {
+            newColor = colors[Math.floor(Math.random() * colors.length)];
+        } while (newColor === currentColor);
+        currentColor = newColor;
+        document.body.style.backgroundColor = currentColor;
+    }
+
+    function applyAnimation() {
+        const container = document.getElementById('pomodoro-container');
+        const animation = animations[Math.floor(Math.random() * animations.length)];
+        container.classList.add(animation);
+
+        setTimeout(() => {
+            container.classList.remove(animation);
+            changeBackgroundColor();
+        }, 2000);
+    }
+
+    function parseTimeToMinutes(timeString) {
+        const [time, period] = timeString.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+        return hours * 60 + minutes;
+    }
+
+    function updateTimer() {
+        const now = getCSTTime();
+        const currentTimeString = formatTime(now);
+        document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
+
+        const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
+        const todaySchedule = schedule[currentDay];
+
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const currentSeconds = now.getSeconds();
+
+        let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+        let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+        let isWithinSchedule = false;
+
+        // Find the current block and next block
+        for (let i = 0; i < todaySchedule.length; i++) {
+            const block = todaySchedule[i];
+            const startMinutes = parseTimeToMinutes(block.start);
+            const endMinutes = parseTimeToMinutes(block.end);
+
+            if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
+                currentBlock = block;
+                nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
+                isWithinSchedule = true;
                 break;
             }
         }
+
+        if (!isWithinSchedule) {
+            // Find the next block
+            for (let block of todaySchedule) {
+                if (parseTimeToMinutes(block.start) > currentMinutes) {
+                    nextBlock = block;
+                    break;
+                }
+            }
+        }
+
+        if (currentBlock.name !== previousBlockName) {
+            applyAnimation();
+            previousBlockName = currentBlock.name;
+        }
+
+        let timeLeft;
+        if (isWithinSchedule) {
+            const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
+            timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
+        } else {
+            const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
+            timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
+        }
+
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        // Update activity timeline
+        const currentActivityEl = document.getElementById('currentActivity');
+        const nextActivityEl = document.getElementById('nextActivity');
+
+        currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
+        currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
+
+        nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
+        nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
+
+        // Schedule the next update
+        setTimeout(updateTimer, 1000);
     }
 
-
-    if (currentBlock.name !== previousBlockName) {
-        applyAnimation();
-        previousBlockName = currentBlock.name;
-    }
-
-
-    let timeLeft;
-    if (isWithinSchedule) {
-        const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
-        timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
-    } else {
-        const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
-        timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-    }
-
-
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-
-    // Update activity timeline
-    const currentActivityEl = document.getElementById('currentActivity');
-    const nextActivityEl = document.getElementById('nextActivity');
-
-
-    currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
-    currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
-
-
-    nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
-    nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
-
-
-    // Schedule the next update
-    setTimeout(updateTimer, 1000);
-}
-
-
-        updateTimer();
-    })();
+    updateTimer();
+})();
     </script>
 </body>
 </html>
+
+
 
 
 
