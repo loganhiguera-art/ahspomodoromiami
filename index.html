@@ -725,8 +725,8 @@
             };
         }
 
-        // 8. Backwards counting - frequently count backward and other time manipulations
-        function createBackwardsCounting() {
+        // 8. Time Reversal - sometimes count up instead of down
+        function createTimeReversal() {
             if (!isAprilFools()) return;
             
             // Save original function if we haven't already
@@ -734,13 +734,13 @@
                 originalUpdateTimer = window.updateTimer;
             }
             
-            // Override with reversed counting and other time manipulations
+            // Override with time reversal
             window.updateTimer = function() {
                 // Call the original function
                 originalUpdateTimer();
                 
-                // 10% chance to mess with time
-                if (Math.random() < 0.1) {
+                // 8% chance to reverse time counting
+                if (Math.random() < 0.08) {
                     const timerElement = document.getElementById('timer');
                     const currentTime = timerElement.textContent;
                     
@@ -748,114 +748,44 @@
                     const [minutes, seconds] = currentTime.split(':').map(Number);
                     let totalSeconds = minutes * 60 + seconds;
                     
-                    // Pick a random time manipulation
-                    const manipulationChoice = Math.floor(Math.random() * 4);
-                    let manipulationMessage = "";
+                    // Show a message that time is reversing
+                    const messageElement = document.createElement('div');
+                    messageElement.style.position = 'fixed';
+                    messageElement.style.top = '30%';
+                    messageElement.style.left = '50%';
+                    messageElement.style.transform = 'translateX(-50%)';
+                    messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+                    messageElement.style.color = 'white';
+                    messageElement.style.padding = '10px 20px';
+                    messageElement.style.borderRadius = '5px';
+                    messageElement.style.zIndex = '1000';
+                    messageElement.style.fontSize = '20px';
+                    messageElement.style.fontWeight = 'bold';
+                    messageElement.textContent = "TIME REVERSING - COUNTDOWN INVERTED";
                     
-                    switch (manipulationChoice) {
-                        case 0: // Count backwards
-                            manipulationMessage = "TIME REVERSING";
-                            // Count backwards for 5-8 seconds
-                            const countDuration = Math.floor(Math.random() * 4) + 5;
-                            let countElapsed = 0;
-                            
-                            const backwardsInterval = setInterval(() => {
-                                totalSeconds += 1; // Add time instead of subtracting
-                                
-                                const newMinutes = Math.floor(totalSeconds / 60);
-                                const newSeconds = totalSeconds % 60;
-                                
-                                timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                                
-                                countElapsed++;
-                                if (countElapsed >= countDuration) {
-                                    clearInterval(backwardsInterval);
-                                    // Return to normal
-                                    originalUpdateTimer();
-                                }
-                            }, 1000);
-                            break;
-                            
-                        case 1: // Speed up time dramatically
-                            manipulationMessage = "TIME ACCELERATING";
-                            // Speed up for 5 seconds
-                            let speedupElapsed = 0;
-                            
-                            const speedupInterval = setInterval(() => {
-                                totalSeconds -= 3; // Remove 3 seconds each tick (triple speed)
-                                if (totalSeconds < 0) totalSeconds = 0;
-                                
-                                const newMinutes = Math.floor(totalSeconds / 60);
-                                const newSeconds = totalSeconds % 60;
-                                
-                                timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                                
-                                speedupElapsed++;
-                                if (speedupElapsed >= 5) {
-                                    clearInterval(speedupInterval);
-                                    originalUpdateTimer();
-                                }
-                            }, 1000);
-                            break;
-                            
-                        case 2: // Time freeze
-                            manipulationMessage = "TIME FROZEN";
-                            // Freeze time for 5 seconds
-                            const frozenTime = currentTime;
-                            const frozenInterval = setInterval(() => {
-                                timerElement.textContent = frozenTime;
-                            }, 200);
-                            
-                            setTimeout(() => {
-                                clearInterval(frozenInterval);
-                                originalUpdateTimer();
-                            }, 5000);
-                            break;
-                            
-                        case 3: // Random time jumps
-                            manipulationMessage = "TIME GLITCHING";
-                            // Jump between random times for 6 seconds
-                            let jumpElapsed = 0;
-                            
-                            const jumpInterval = setInterval(() => {
-                                // Jump to a random time between 0 and the current time
-                                const jumpSeconds = Math.floor(Math.random() * totalSeconds);
-                                const jumpMinutes = Math.floor(jumpSeconds / 60);
-                                const jumpSecs = jumpSeconds % 60;
-                                
-                                timerElement.textContent = `${jumpMinutes.toString().padStart(2, '0')}:${jumpSecs.toString().padStart(2, '0')}`;
-                                
-                                jumpElapsed++;
-                                if (jumpElapsed >= 6) {
-                                    clearInterval(jumpInterval);
-                                    originalUpdateTimer();
-                                }
-                            }, 1000);
-                            break;
-                    }
+                    document.body.appendChild(messageElement);
                     
-                    // Show the manipulation message
-                    if (manipulationMessage) {
-                        const messageElement = document.createElement('div');
-                        messageElement.style.position = 'fixed';
-                        messageElement.style.top = '20%';
-                        messageElement.style.left = '50%';
-                        messageElement.style.transform = 'translateX(-50%)';
-                        messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
-                        messageElement.style.color = 'white';
-                        messageElement.style.padding = '10px 20px';
-                        messageElement.style.borderRadius = '5px';
-                        messageElement.style.zIndex = '1000';
-                        messageElement.style.fontSize = '20px';
-                        messageElement.style.fontWeight = 'bold';
-                        messageElement.textContent = manipulationMessage;
+                    // Start counting up instead of down for 10-15 seconds
+                    const countDuration = Math.floor(Math.random() * 6) + 10;
+                    let countElapsed = 0;
+                    
+                    const timeReversalInterval = setInterval(() => {
+                        // Add one second instead of subtracting
+                        totalSeconds += 1;
                         
-                        document.body.appendChild(messageElement);
+                        const newMinutes = Math.floor(totalSeconds / 60);
+                        const newSeconds = totalSeconds % 60;
                         
-                        setTimeout(() => {
+                        timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                        
+                        countElapsed++;
+                        if (countElapsed >= countDuration) {
+                            clearInterval(timeReversalInterval);
+                            // Return to normal
+                            originalUpdateTimer();
                             document.body.removeChild(messageElement);
-                        }, 4000);
-                    }
+                        }
+                    }, 1000);
                 }
             };
         }
@@ -917,26 +847,26 @@
             }, 120000); // Every 2 minutes
         }
 
-        // 10. Random motivational messages with fake news
+        // 10. Random motivational messages with fake news based on real world
         function createRandomMotivationalMessages() {
             if (!isAprilFools()) return;
             
             const messages = [
-                "BREAKING: Timer discovered to be sentient, demands longer breaks",
-                "URGENT: Students evolving extra fingers from excessive timer usage",
-                "ALERT: School caffeine supply replaced with decaf as April Fools prank",
-                "CONFIRMED: Math teacher actually three raccoons in a lab coat",
-                "SHOCKING: Principal caught setting all clocks 5 minutes fast",
-                "JUST IN: School lunch today actually edible, scientists baffled",
-                "UPDATE: Study hall reclassified as 'professional napping time'",
-                "SCANDAL: Timer caught embezzling seconds from lunch period",
-                "BREAKING: School wifi password changed to 'ILoveHomework'",
-                "WARNING: Spontaneous dance breaks mandatory during next period",
-                "CONSPIRACY: Janitorial staff actually time travelers stuck in 2025",
-                "HEALTH ALERT: Homework scientifically proven to cause spontaneous eye-rolling",
-                "TECH NEWS: School computers upgraded to potatoes with wires",
-                "SPORTS UPDATE: Teacher sets new world record in eye-rolling marathon",
-                "WEATHER: Brain fog expected during math class, clearing by lunch"
+                "BREAKING: School district votes to replace all chairs with exercise balls to 'boost focus'",
+                "STUDY: New research shows doodling in class improves test scores by 200%",
+                "TECH NEWS: School installing AI teachers next semester, human teachers to 'assist'",
+                "HEALTH ALERT: CDC declares homework 'potentially beneficial in small doses'",
+                "LOCAL NEWS: School cafeteria switching to all-pizza menu after student petition",
+                "EXCLUSIVE: Scientists discover link between early morning classes and zombie-like symptoms",
+                "BREAKING: School board approves 3-day weekends 'to improve student retention'",
+                "NATIONAL NEWS: Government considering replacing standardized tests with TikTok challenges",
+                "EDUCATION: New study finds listening to music while studying doubles brain capacity",
+                "WEATHER: Unprecedented 'brain fog' predicted to cover school until summer break",
+                "TECH UPDATE: School WiFi getting upgrade, will actually work in all classrooms",
+                "RESEARCH: Scientists confirm 5-minute breaks actually feel like 30 seconds to teenage brains",
+                "POLICY CHANGE: School adopts 'nap pods' after sleep study shows benefits",
+                "BREAKING: Principal announces free energy drinks for all morning classes",
+                "JUST IN: Summer break extended by two weeks due to 'calendar calculation error'"
             ];
             
             // Set up the news banner
@@ -1021,7 +951,7 @@
                 createGlitchyText();
                 createFakeSystemMessages();
                 createColorChaos();
-                createBackwardsCounting();
+                createTimeReversal();
                 createTimerMultiplication();
                 createRandomMotivationalMessages();
                 createSpinningTimer();
