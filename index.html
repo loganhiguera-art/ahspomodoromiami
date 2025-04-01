@@ -1,4 +1,755 @@
-<!DOCTYPE html>
+// Add elements to notification
+                    notification.appendChild(notificationTitle);
+                    notification.appendChild(notificationContent);
+                    
+                    // Add to body
+                    document.body.appendChild(notification);
+                    
+                    // Animate in
+                    setTimeout(() => {
+                        notification.style.transform = 'translateX(0)';
+                    }, 100);
+                    
+                    // Add close button functionality
+                    notificationTitle.querySelector('span:last-child').addEventListener('click', function() {
+                        notification.style.transform = 'translateX(400px)';
+                        setTimeout(() => {
+                            if (document.getElementById('fake-notification')) {
+                                document.body.removeChild(notification);
+                            }
+                        }, 500);
+                    });
+                    
+                    // Auto remove after 5 seconds
+                    setTimeout(() => {
+                        if (document.getElementById('fake-notification')) {
+                            notification.style.transform = 'translateX(400px)';
+                            setTimeout(() => {
+                                if (document.getElementById('fake-notification')) {
+                                    document.body.removeChild(notification);
+                                }
+                            }, 500);
+                        }
+                    }, 5000);
+                }
+            }, 120000); // Every 2 minutes
+        }
+        
+        // 16. Screen shake effect
+        function createScreenShake() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 15% chance every 3 minutes
+                if (Math.random() < 0.15) {
+                    // Create shake animation
+                    const shakeIntensity = Math.floor(Math.random() * 10) + 5; // 5-15px shake
+                    
+                    // Add message
+                    const messageElement = document.createElement('div');
+                    messageElement.id = 'shake-message';
+                    messageElement.style.position = 'fixed';
+                    messageElement.style.top = '30%';
+                    messageElement.style.left = '50%';
+                    messageElement.style.transform = 'translateX(-50%)';
+                    messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+                    messageElement.style.color = 'white';
+                    messageElement.style.padding = '15px 25px';
+                    messageElement.style.borderRadius = '5px';
+                    messageElement.style.zIndex = '1000';
+                    messageElement.style.fontSize = '24px';
+                    messageElement.style.fontWeight = 'bold';
+                    messageElement.textContent = "EARTHQUAKE ALERT!";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(messageElement);
+                    
+                    // Create shake keyframes if they don't exist
+                    if (!document.getElementById('shake-keyframes')) {
+                        const style = document.createElement('style');
+                        style.id = 'shake-keyframes';
+                        style.textContent = `
+                            @keyframes shake-screen {
+                                0% { transform: translate(0, 0); }
+                                25% { transform: translate(${shakeIntensity}px, ${shakeIntensity}px); }
+                                50% { transform: translate(-${shakeIntensity}px, -${shakeIntensity}px); }
+                                75% { transform: translate(-${shakeIntensity}px, ${shakeIntensity}px); }
+                                100% { transform: translate(${shakeIntensity}px, -${shakeIntensity}px); }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    // Apply shaking to the entire body
+                    document.body.style.animation = `shake-screen 0.2s infinite`;
+                    
+                    // Stop shaking after 4 seconds
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                        if (document.getElementById('shake-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                    }, 4000);
+                }
+            }, 180000); // Every 3 minutes
+        }
+        
+        // 17. Create Magnifying Glass Effect
+        function createMagnifyingEffect() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 10% chance every 4 minutes
+                if (Math.random() < 0.1) {
+                    // Create magnifying glass overlay
+                    const magnifier = document.createElement('div');
+                    magnifier.id = 'magnifier';
+                    magnifier.style.position = 'fixed';
+                    magnifier.style.width = '150px';
+                    magnifier.style.height = '150px';
+                    magnifier.style.borderRadius = '50%';
+                    magnifier.style.boxShadow = '0 0 0 7px rgba(255, 255, 255, 0.85), 0 0 7px 7px rgba(0, 0, 0, 0.5)';
+                    magnifier.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                    magnifier.style.transform = 'scale(1.2)';
+                    magnifier.style.pointerEvents = 'none';
+                    magnifier.style.zIndex = '2000';
+                    magnifier.style.display = 'none';
+                    magnifier.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(magnifier);
+                    
+                    // Add message about investigation
+                    const messageElement = document.createElement('div');
+                    messageElement.id = 'magnifier-message';
+                    messageElement.style.position = 'fixed';
+                    messageElement.style.top = '20px';
+                    messageElement.style.left = '50%';
+                    messageElement.style.transform = 'translateX(-50%)';
+                    messageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    messageElement.style.color = 'white';
+                    messageElement.style.padding = '10px 20px';
+                    messageElement.style.borderRadius = '5px';
+                    messageElement.style.zIndex = '1000';
+                    messageElement.style.fontSize = '16px';
+                    messageElement.textContent = "Timer Investigation Mode Activated";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(messageElement);
+                    
+                    // Show magnifier
+                    magnifier.style.display = 'block';
+                    
+                    // Make magnifier follow cursor
+                    const moveMagnifier = (e) => {
+                        if (magnifier) {
+                            magnifier.style.left = `${e.clientX - 75}px`;
+                            magnifier.style.top = `${e.clientY - 75}px`;
+                        }
+                    };
+                    
+                    document.addEventListener('mousemove', moveMagnifier);
+                    
+                    // Remove after 15 seconds
+                    setTimeout(() => {
+                        document.removeEventListener('mousemove', moveMagnifier);
+                        if (document.getElementById('magnifier')) {
+                            document.body.removeChild(magnifier);
+                        }
+                        if (document.getElementById('magnifier-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                    }, 15000);
+                }
+            }, 240000); // Every 4 minutes
+        }
+        
+        // 18. Add Matrix Effect (falling green code)
+        function createMatrixEffect() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 10% chance every 5 minutes
+                if (Math.random() < 0.1) {
+                    // Create canvas for matrix effect
+                    const canvas = document.createElement('canvas');
+                    canvas.id = 'matrix-canvas';
+                    canvas.style.position = 'fixed';
+                    canvas.style.top = '0';
+                    canvas.style.left = '0';
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                    canvas.style.zIndex = '1500';
+                    canvas.style.opacity = '0.8';
+                    canvas.style.pointerEvents = 'none';
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    canvas.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(canvas);
+                    
+                    // Add message
+                    const messageElement = document.createElement('div');
+                    messageElement.id = 'matrix-message';
+                    messageElement.style.position = 'fixed';
+                    messageElement.style.bottom = '50px';
+                    messageElement.style.left = '50%';
+                    messageElement.style.transform = 'translateX(-50%)';
+                    messageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    messageElement.style.color = '#0f0';
+                    messageElement.style.padding = '10px 20px';
+                    messageElement.style.borderRadius = '5px';
+                    messageElement.style.zIndex = '1501';
+                    messageElement.style.fontSize = '20px';
+                    messageElement.style.fontFamily = 'monospace';
+                    messageElement.innerHTML = "ENTERING THE MATRIX...";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(messageElement);
+                    
+                    // Matrix code drawing
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const columns = Math.floor(canvas.width / 20);
+                    const drops = [];
+                    for (let i = 0; i < columns; i++) {
+                        drops[i] = 1;
+                    }
+                    
+                    const matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789@#$%^&*()*&^%";
+                    
+                    ctx.fillStyle = '#0f0';
+                    ctx.font = '15px monospace';
+                    
+                    const drawMatrix = () => {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        ctx.fillStyle = '#0f0';
+                        ctx.font = '15px monospace';
+                        
+                        for (let i = 0; i < drops.length; i++) {
+                            const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                            ctx.fillText(text, i * 20, drops[i] * 20);
+                            
+                            if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                                drops[i] = 0;
+                            }
+                            
+                            drops[i]++;
+                        }
+                    };
+                    
+                    // Run matrix animation
+                    const matrixInterval = setInterval(drawMatrix, 50);
+                    
+                    // Remove after 12 seconds
+                    setTimeout(() => {
+                        clearInterval(matrixInterval);
+                        if (document.getElementById('matrix-canvas')) {
+                            document.body.removeChild(canvas);
+                        }
+                        if (document.getElementById('matrix-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                    }, 12000);
+                }
+            }, 300000); // Every 5 minutes
+        }
+        
+        // 19. Create funny loading screens
+        function createRandomLoadingScreens() {
+            if (!isAprilFools()) return;
+            
+            const loadingMessages = [
+                "Loading unnecessary features...",
+                "Converting caffeine to code...",
+                "Generating random excuses...",
+                "Pretending to do important things...",
+                "Calculating time until freedom...",
+                "Installing distractions...",
+                "Procrastinating productivity...",
+                "Downloading more time...",
+                "Synchronizing with teacher's mood...",
+                "Deleting homework files...",
+                "Counting down to weekend...",
+                "Buffering motivation...",
+                "Finding lost pencils...",
+                "Loading daydream sequences...",
+                "Aligning brain cells..."
+            ];
+            
+            setInterval(() => {
+                // 20% chance every 2.5 minutes
+                if (Math.random() < 0.2) {
+                    // Create loading screen overlay
+                    const loadingOverlay = document.createElement('div');
+                    loadingOverlay.id = 'loading-overlay';
+                    loadingOverlay.style.position = 'fixed';
+                    loadingOverlay.style.top = '0';
+                    loadingOverlay.style.left = '0';
+                    loadingOverlay.style.width = '100%';
+                    loadingOverlay.style.height = '100%';
+                    loadingOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+                    loadingOverlay.style.display = 'flex';
+                    loadingOverlay.style.flexDirection = 'column';
+                    loadingOverlay.style.justifyContent = 'center';
+                    loadingOverlay.style.alignItems = 'center';
+                    loadingOverlay.style.zIndex = '3000';
+                    loadingOverlay.dataset.creationTime = new Date().getTime().toString();
+                    
+                    // Choose random loading message
+                    const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+                    
+                    // Create loading content
+                    const loadingContent = document.createElement('div');
+                    loadingContent.style.textAlign = 'center';
+                    loadingContent.innerHTML = `
+                        <div style="font-size: 24px; color: white; margin-bottom: 20px;">${randomMessage}</div>
+                        <div style="width: 200px; height: 20px; background-color: #333; border-radius: 10px; overflow: hidden;">
+                            <div id="loading-bar" style="width: 0%; height: 100%; background-color: #4CAF50; transition: width 0.5s linear;"></div>
+                        </div>
+                        <div id="loading-percentage" style="font-size: 18px; color: white; margin-top: 10px;">0%</div>
+                    `;
+                    
+                    loadingOverlay.appendChild(loadingContent);
+                    document.body.appendChild(loadingOverlay);
+                    
+                    // Simulate loading progress
+                    let progress = 0;
+                    
+                    const loadingInterval = setInterval(() => {
+                        // Increase by random amount
+                        progress += Math.floor(Math.random() * 10) + 1;
+                        if (progress > 100) progress = 100;
+                        
+                        // Update loading bar
+                        const loadingBar = document.getElementById('loading-bar');
+                        const loadingPercentage = document.getElementById('loading-percentage');
+                        
+                        if (loadingBar) loadingBar.style.width = `${progress}%`;
+                        if (loadingPercentage) loadingPercentage.textContent = `${progress}%`;
+                        
+                        // If complete, wait a moment and remove
+                        if (progress >= 100) {
+                            clearInterval(loadingInterval);
+                            setTimeout(() => {
+                                if (document.getElementById('loading-overlay')) {
+                                    document.body.removeChild(loadingOverlay);
+                                }
+                            }, 1000);
+                        }
+                    }, 300);
+                    
+                    // Ensure it doesn't stay forever
+                    setTimeout(() => {
+                        clearInterval(loadingInterval);
+                        if (document.getElementById('loading-overlay')) {
+                            document.body.removeChild(loadingOverlay);
+                        }
+                    }, 8000); // Maximum 8 seconds
+                }
+            }, 150000); // Every 2.5 minutes
+        }
+        
+        // 20. Slow Motion Effect
+        function createSlowMotionEffect() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 10% chance every 3 minutes
+                if (Math.random() < 0.1) {
+                    // Create message
+                    const messageElement = document.createElement('div');
+                    messageElement.id = 'slow-motion-message';
+                    messageElement.style.position = 'fixed';
+                    messageElement.style.top = '40%';
+                    messageElement.style.left = '50%';
+                    messageElement.style.transform = 'translate(-50%, -50%)';
+                    messageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    messageElement.style.color = 'white';
+                    messageElement.style.padding = '20px 30px';
+                    messageElement.style.borderRadius = '10px';
+                    messageElement.style.zIndex = '2000';
+                    messageElement.style.fontSize = '28px';
+                    messageElement.style.fontWeight = 'bold';
+                    messageElement.style.textAlign = 'center';
+                    messageElement.innerHTML = "S L O W&nbsp;&nbsp;&nbsp;M O T I O N<br>A C T I V A T E D";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
+                    
+                    document.body.appendChild(messageElement);
+                    
+                    // Add slow motion effect to all animations
+                    const slowMotionStyle = document.createElement('style');
+                    slowMotionStyle.id = 'slow-motion-style';
+                    slowMotionStyle.textContent = `
+                        * {
+                            animation-duration: 4s !important;
+                            transition-duration: 4s !important;
+                        }
+                    `;
+                    document.head.appendChild(slowMotionStyle);
+                    
+                    // Save original timer function
+                    if (!window.originalSlowMotionTimer && originalUpdateTimer) {
+                        window.originalSlowMotionTimer = originalUpdateTimer;
+                    }
+                    
+                    // Override update timer to be slower
+                    window.updateTimer = function() {
+                        if (window.originalSlowMotionTimer) {
+                            window.originalSlowMotionTimer();
+                        } else if (originalUpdateTimer) {
+                            originalUpdateTimer();
+                        } else {
+                            // Fallback
+                            updateTimer();
+                        }
+                    };
+                    
+                    // Remove slow motion after 6 seconds
+                    setTimeout(() => {
+                        if (document.getElementById('slow-motion-style')) {
+                            document.head.removeChild(slowMotionStyle);
+                        }
+                        if (document.getElementById('slow-motion-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                        
+                        // Restore normal update timer
+                        if (window.originalSlowMotionTimer) {
+                            window.updateTimer = window.originalSlowMotionTimer;
+                        } else if (originalUpdateTimer) {
+                            window.updateTimer = originalUpdateTimer;
+                        }
+                    }, 6000);
+                }
+            }, 180000); // Every 3 minutes
+        }
+
+        // Add failsafe cleanup to prevent permanent stucks
+        function addFailsafeCleanup() {
+            // Run every 30 seconds to clean up any stuck elements
+            setInterval(() => {
+                // List of all potential stuck element IDs
+                const possibleStuckElementIds = [
+                    'pause-message', 
+                    'rick-roll', 
+                    'cursor-follower', 
+                    'fake-notification',
+                    'memory-wipe-notification',
+                    'system-message',
+                    'time-reversal-message',
+                    'rick-roll-announce',
+                    'shake-message',
+                    'magnifier',
+                    'magnifier-message',
+                    'matrix-canvas',
+                    'matrix-message',
+                    'loading-overlay',
+                    'slow-motion-message'
+                ];
+                
+                // Check for and remove any stuck messages
+                possibleStuckElementIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        // Check if the element has been on screen for too long (over 20 seconds)
+                        const creationTime = parseInt(element.dataset.creationTime || '0');
+                        const currentTime = new Date().getTime();
+                        if (creationTime === 0) {
+                            // Set creation time if not set
+                            element.dataset.creationTime = currentTime.toString();
+                        } else if (currentTime - creationTime > 20000) {
+                            // Remove if it's been more than 20 seconds
+                            try {
+                                document.body.removeChild(element);
+                                console.log(`Removed stuck element: ${id}`);
+                            } catch (e) {
+                                console.log(`Failed to remove element: ${id}`);
+                            }
+                        }
+                    }
+                });
+                
+                // Also check for any styling issues and reset them
+                const container = document.getElementById('pomodoro-container');
+                if (container) {
+                    const currentTransform = container.style.transform;
+                    // If the transform has been applied for too long, reset it
+                    if (currentTransform && currentTransform !== 'none') {
+                        const transformTime = parseInt(container.dataset.transformTime || '0');
+                        const currentTime = new Date().getTime();
+                        if (transformTime === 0) {
+                            container.dataset.transformTime = currentTime.toString();
+                        } else if (currentTime - transformTime > 10000) {
+                            container.style.transition = 'transform 1s ease-out';
+                            container.style.transform = 'none';
+                            container.dataset.transformTime = '0';
+                        }
+                    }
+                }
+                
+                // Reset any original function that might have been overridden for too long
+                if (originalUpdateTimer && !window.updateTimer.__isOriginal) {
+                    // Check if timer function was overridden too long ago
+                    const overrideTime = window.updateTimer.__overrideTime || 0;
+                    const currentTime = new Date().getTime();
+                    if (overrideTime && currentTime - overrideTime > 30000) {
+                        // Reset to original after 30 seconds in case it got stuck
+                        window.updateTimer = originalUpdateTimer;
+                        window.updateTimer.__isOriginal = true;
+                        console.log('Reset timer function to original');
+                    }
+                }
+                
+                // Make sure the timer element exists and has a valid time
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    const timerText = timerElement.textContent;
+                    if (!timerText.includes(':') || timerText === '--:--') {
+                        // If timer is invalid, force an update
+                        if (originalUpdateTimer) {
+                            originalUpdateTimer();
+                        } else {
+                            updateTimer();
+                        }
+                    }
+                }
+            }, 30000);
+        }
+
+        // Initialize April Fools functions
+        function initAprilFools() {
+            if (isAprilFools()) {
+                console.log("April Fools mode activated!");
+                createRandomPauses();
+                createNumberScramble();
+                createMemoryWipe();
+                createSpeedAcceleration();
+                createGlitchyText();
+                createFakeSystemMessages();
+                createColorChaos();
+                createTimeReversal();
+                createTimerMultiplication();
+                createRandomMotivationalMessages();
+                createSpinningTimer();
+                createUpsideDownText();
+                createRickRoll();
+                createCursorFollower();
+                createFakeNotifications();
+                createScreenShake();
+                createMagnifyingEffect();
+                createMatrixEffect();
+                createRandomLoadingScreens();
+                createSlowMotionEffect();
+                
+                // Add failsafe cleanup function to prevent any permanent stucks
+                addFailsafeCleanup();
+            }
+        }
+
+        // ========================
+        // NORMAL TIMER FUNCTIONALITY
+        // ========================
+
+        function getCSTTime() {
+            return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
+        }
+
+        function formatTime(date) {
+            return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        function changeBackgroundColor() {
+            let newColor;
+            do {
+                newColor = colors[Math.floor(Math.random() * colors.length)];
+            } while (newColor === currentColor);
+            currentColor = newColor;
+            document.body.style.backgroundColor = currentColor;
+        }
+
+        function applyAnimation() {
+            const container = document.getElementById('pomodoro-container');
+            if (!container) return; // Safety check
+            
+            const animation = animations[Math.floor(Math.random() * animations.length)];
+            container.classList.add(animation);
+
+            setTimeout(() => {
+                if (container) {
+                    container.classList.remove(animation);
+                    changeBackgroundColor();
+                }
+            }, 2000);
+        }
+
+        function parseTimeToMinutes(timeString) {
+            const [time, period] = timeString.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+            return hours * 60 + minutes;
+        }
+
+        // Helper functions for finding activities
+        function findCurrentActivity(currentMinutes, currentSeconds, todaySchedule) {
+            for (let i = 0; i < todaySchedule.length; i++) {
+                const block = todaySchedule[i];
+                const startMinutes = parseTimeToMinutes(block.start);
+                const endMinutes = parseTimeToMinutes(block.end);
+                const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
+
+                if (currentTotalSeconds >= startMinutes * 60 && 
+                    currentTotalSeconds < endMinutes * 60) {
+                    return block;
+                }
+            }
+            return { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+        }
+
+        // Helper function to find next activity
+        function findNextActivity(currentMinutes, currentSeconds, todaySchedule) {
+            const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
+            
+            // Sort schedule by start time
+            const sortedSchedule = [...todaySchedule].sort((a, b) => 
+                parseTimeToMinutes(a.start) - parseTimeToMinutes(b.start)
+            );
+            
+            // Find the next activity
+            for (let block of sortedSchedule) {
+                if (parseTimeToMinutes(block.start) * 60 > currentTotalSeconds) {
+                    return block;
+                }
+            }
+            
+            // If no next activity found today, return the first activity
+            return sortedSchedule[0];
+        }
+
+        // Helper function to find next activity start time
+        function findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) {
+            const nextActivity = findNextActivity(currentMinutes, currentSeconds, todaySchedule);
+            return parseTimeToMinutes(nextActivity.start);
+        }
+
+        // Function to update activity timeline
+        function updateActivityTimeline(currentActivity, nextActivity) {
+            const currentActivityEl = document.getElementById('currentActivity');
+            const nextActivityEl = document.getElementById('nextActivity');
+            
+            if (!currentActivityEl || !nextActivityEl) return; // Safety check
+            
+            const currentActivityName = currentActivityEl.querySelector('.activity-name');
+            const currentActivityTime = currentActivityEl.querySelector('.activity-time');
+            const nextActivityName = nextActivityEl.querySelector('.activity-name');
+            const nextActivityTime = nextActivityEl.querySelector('.activity-time');
+            
+            if (currentActivityName) currentActivityName.textContent = `Current: ${currentActivity.name}`;
+            if (currentActivityTime) currentActivityTime.textContent = `${currentActivity.start} - ${currentActivity.end}`;
+            
+            if (nextActivityName) nextActivityName.textContent = `Next: ${nextActivity.name}`;
+            if (nextActivityTime) nextActivityTime.textContent = `${nextActivity.start} - ${nextActivity.end}`;
+        }
+
+        function updateTimer() {
+            const now = getCSTTime();
+            const currentTimeString = formatTime(now);
+            
+            const currentTimeElement = document.getElementById('currentTime');
+            if (currentTimeElement) {
+                currentTimeElement.innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
+            }
+
+            const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
+            const todaySchedule = schedule[currentDay];
+
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const currentSeconds = now.getSeconds();
+
+            let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+            let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+            let isWithinSchedule = false;
+
+            // Find the current block and next block
+            for (let i = 0; i < todaySchedule.length; i++) {
+                const block = todaySchedule[i];
+                const startMinutes = parseTimeToMinutes(block.start);
+                const endMinutes = parseTimeToMinutes(block.end);
+
+                if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
+                    currentBlock = block;
+                    nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
+                    isWithinSchedule = true;
+                    break;
+                }
+            }
+
+            if (!isWithinSchedule) {
+                // Find the next block
+                for (let block of todaySchedule) {
+                    if (parseTimeToMinutes(block.start) > currentMinutes) {
+                        nextBlock = block;
+                        break;
+                    }
+                }
+            }
+
+            if (currentBlock.name !== previousBlockName) {
+                applyAnimation();
+                previousBlockName = currentBlock.name;
+            }
+
+            let timeLeft;
+            if (isWithinSchedule) {
+                const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
+                timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
+            } else {
+                const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
+                timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
+            }
+
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            // Update activity timeline
+            const currentActivityEl = document.getElementById('currentActivity');
+            const nextActivityEl = document.getElementById('nextActivity');
+
+            if (currentActivityEl && nextActivityEl) {
+                const currentActivityName = currentActivityEl.querySelector('.activity-name');
+                const currentActivityTime = currentActivityEl.querySelector('.activity-time');
+                const nextActivityName = nextActivityEl.querySelector('.activity-name');
+                const nextActivityTime = nextActivityEl.querySelector('.activity-time');
+
+                if (currentActivityName) currentActivityName.textContent = `Current: ${currentBlock.name}`;
+                if (currentActivityTime) currentActivityTime.textContent = `${currentBlock.start} - ${currentBlock.end}`;
+
+                if (nextActivityName) nextActivityName.textContent = `Next: ${nextBlock.name}`;
+                if (nextActivityTime) nextActivityTime.textContent = `${nextBlock.start} - ${nextBlock.end}`;
+            }
+
+            // Schedule the next update
+            setTimeout(updateTimer, 1000);
+        }
+
+        // Initialize the timer
+        updateTimer();
+        
+        // Initialize April Fools if needed
+        initAprilFools();
+    })();
+    </script>
+</body>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -302,15 +1053,18 @@
         let previousBlockName = "";
         let currentColor = "";
 
+        // For restoring timer function
+        let originalUpdateTimer;
+
         // ========================
         // APRIL FOOLS FUNCTIONALITY
         // ========================
 
-        // Check if it's April 1st (for demo purposes, you might want to always return true)
+        // Check if it's April 1st (for demo purposes, set to always true)
         const isAprilFools = () => {
-            const today = new Date();
-            return today.getMonth() === 3 && today.getDate() === 1; // Month is 0-indexed, so 3 = April
-            // return true; // Uncomment this to always trigger April Fools mode
+            //const today = new Date();
+            //return today.getMonth() === 3 && today.getDate() === 1; // Month is 0-indexed, so 3 = April
+            return true; // Always trigger April Fools mode
         };
 
         // 1. Random Pauses - but never permanently
@@ -350,6 +1104,7 @@
                     pauseMessage.style.zIndex = '1000';
                     pauseMessage.style.fontSize = '24px';
                     pauseMessage.textContent = messageText;
+                    pauseMessage.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(pauseMessage);
                     
@@ -374,8 +1129,7 @@
             }, 90000); // Check every 90 seconds
         }
 
-        // 2. Number scramble - occasionally show nonsensical time
-        let originalUpdateTimer; // Will store the original function reference
+        // 2. Number scramble - frequently show nonsensical time
         function createNumberScramble() {
             if (!isAprilFools()) return;
             
@@ -384,22 +1138,61 @@
                 originalUpdateTimer = window.updateTimer;
             }
             
-            // Override with scrambled numbers occasionally
+            // Override with scrambled numbers frequently
             window.updateTimer = function() {
+                // Track override time for failsafe
+                if (!window.updateTimer.__overrideTime) {
+                    window.updateTimer.__overrideTime = new Date().getTime();
+                }
+                window.updateTimer.__isOriginal = false;
+                
                 // Call the original function
                 originalUpdateTimer();
                 
-                // 5% chance to scramble the numbers
-                if (Math.random() < 0.05) {
+                // 15% chance to scramble the numbers
+                if (Math.random() < 0.15) {
                     const timerElement = document.getElementById('timer');
-                    const randomMinutes = Math.floor(Math.random() * 99);
-                    const randomSeconds = Math.floor(Math.random() * 99);
-                    timerElement.textContent = `${randomMinutes.toString().padStart(2, '0')}:${randomSeconds.toString().padStart(2, '0')}`;
+                    if (!timerElement) return; // Safety check
                     
-                    // Return to normal after 3 seconds
+                    // Get creative with the scrambled values
+                    const scrambleOptions = [
+                        // Random numbers
+                        () => {
+                            const randomMinutes = Math.floor(Math.random() * 99);
+                            const randomSeconds = Math.floor(Math.random() * 99);
+                            return `${randomMinutes.toString().padStart(2, '0')}:${randomSeconds.toString().padStart(2, '0')}`;
+                        },
+                        // Impossible time
+                        () => `${Math.floor(Math.random() * 99).toString().padStart(2, '0')}:${(Math.floor(Math.random() * 40) + 60).toString().padStart(2, '0')}`,
+                        // Letters mixed with numbers
+                        () => `${Math.floor(Math.random() * 9)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}:${Math.floor(Math.random() * 9)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
+                        // Emoji time
+                        () => `😱:${Math.floor(Math.random() * 99).toString().padStart(2, '0')}`,
+                        // Error message
+                        () => `ERR:OR`,
+                        // Negative time
+                        () => `-${Math.floor(Math.random() * 20).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
+                    ];
+                    
+                    // Save the current time for restoration
+                    const originalTime = timerElement.textContent;
+                    
+                    // Pick a random scramble option
+                    const scrambleFunction = scrambleOptions[Math.floor(Math.random() * scrambleOptions.length)];
+                    timerElement.textContent = scrambleFunction();
+                    
+                    // Return to normal after 2 seconds
                     setTimeout(() => {
-                        originalUpdateTimer();
-                    }, 3000);
+                        if (timerElement) {
+                            // First check if we should restore from saved value
+                            if (originalTime && originalTime.includes(':')) {
+                                timerElement.textContent = originalTime;
+                            } else {
+                                // If not, call original update
+                                originalUpdateTimer();
+                            }
+                        }
+                    }, 2000);
                 }
             };
         }
@@ -412,13 +1205,17 @@
                 // 10% chance every 5 minutes to "forget" settings
                 if (Math.random() < 0.1) {
                     // Save the current timer state
-                    const originalTimer = document.getElementById('timer').textContent;
+                    const timerElement = document.getElementById('timer');
+                    if (!timerElement) return; // Safety check
+                    
+                    const originalTimer = timerElement.textContent;
                     
                     // Display "memory wiped" message
-                    document.getElementById('timer').textContent = "MEMORY RESET";
+                    timerElement.textContent = "MEMORY RESET";
                     
                     // Create a notification
                     const notification = document.createElement('div');
+                    notification.id = 'memory-wipe-notification';
                     notification.style.position = 'fixed';
                     notification.style.top = '20px';
                     notification.style.right = '20px';
@@ -428,14 +1225,36 @@
                     notification.style.borderRadius = '5px';
                     notification.style.zIndex = '1000';
                     notification.textContent = 'SYSTEM ALERT: Timer memory wiped. Recalibrating...';
+                    notification.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(notification);
                     
                     // Restore after 8 seconds
                     setTimeout(() => {
-                        document.getElementById('timer').textContent = originalTimer;
-                        document.body.removeChild(notification);
+                        if (timerElement) {
+                            if (originalTimer && originalTimer.includes(':')) {
+                                timerElement.textContent = originalTimer;
+                            } else {
+                                // Try to get current time using original function
+                                if (originalUpdateTimer) {
+                                    originalUpdateTimer();
+                                } else {
+                                    updateTimer();
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById('memory-wipe-notification')) {
+                            document.body.removeChild(notification);
+                        }
                     }, 8000);
+                    
+                    // Failsafe - ensure notification is removed
+                    setTimeout(() => {
+                        if (document.getElementById('memory-wipe-notification')) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 10000);
                 }
             }, 300000); // Check every 5 minutes
         }
@@ -454,26 +1273,65 @@
             
             // Override the update timer function to accelerate time
             window.updateTimer = function() {
+                // Track override time for failsafe
+                if (!window.updateTimer.__overrideTime) {
+                    window.updateTimer.__overrideTime = new Date().getTime();
+                }
+                window.updateTimer.__isOriginal = false;
+                
                 const now = getCSTTime();
                 const currentTimeString = formatTime(now);
-                document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
+                const currentTimeElement = document.getElementById('currentTime');
+                if (currentTimeElement) {
+                    currentTimeElement.innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
+                }
                 
                 const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
                 const todaySchedule = schedule[currentDay];
                 
-                // Calculate accelerated time
+                // Calculate regular time
                 let currentMinutes = now.getHours() * 60 + now.getMinutes();
                 let currentSeconds = now.getSeconds();
                 
                 // Apply speed multiplier but only during specific periods
                 // Only apply during "Focus Time" or "Pomodoro" sessions
                 const currentActivity = findCurrentActivity(currentMinutes, currentSeconds, todaySchedule);
-                const isFocusTime = currentActivity.name.includes('Focus') || 
-                                    currentActivity.name.includes('Pomodoro');
+                const isFocusTime = currentActivity.name && 
+                                   (currentActivity.name.includes('Focus') || 
+                                    currentActivity.name.includes('Pomodoro'));
                 
-                // Apply acceleration only during focus times
+                // Calculate the time remaining in the current block
+                let timeLeft;
+                if (currentActivity.name !== "Outside Schedule") {
+                    const endSeconds = parseTimeToMinutes(currentActivity.end) * 60;
+                    let currentTotalSeconds = currentMinutes * 60 + currentSeconds;
+                    
+                    // If in a focus time, accelerate the timer
+                    if (isFocusTime) {
+                        currentTotalSeconds = Math.floor(currentTotalSeconds + (currentSeconds * (speedMultiplier - 1)));
+                    }
+                    
+                    timeLeft = endSeconds - currentTotalSeconds;
+                    if (timeLeft < 0) timeLeft = 0;
+                } else {
+                    const nextStartSeconds = findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) * 60;
+                    timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
+                }
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                // Update activity timeline
+                updateActivityTimeline(currentActivity, findNextActivity(currentMinutes, currentSeconds, todaySchedule));
+                
+                // Apply acceleration (now in a separate calculation)
                 if (isFocusTime) {
-                    // Calculate accelerated time but don't display it in the current time
+                    // Calculate accelerated time
                     const acceleratedSeconds = Math.floor(currentSeconds * speedMultiplier);
                     const acceleratedCurrentMinutes = currentMinutes + Math.floor(acceleratedSeconds / 60);
                     const acceleratedCurrentSeconds = acceleratedSeconds % 60;
@@ -500,94 +1358,21 @@
                     }
                 }
                 
-                // Calculate the time remaining in the current block
-                let timeLeft;
-                if (currentActivity.name !== "Outside Schedule") {
-                    const endSeconds = parseTimeToMinutes(currentActivity.end) * 60;
-                    let currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-                    
-                    // If in a focus time, accelerate the timer
-                    if (isFocusTime) {
-                        currentTotalSeconds = Math.floor(currentTotalSeconds + (currentSeconds * (speedMultiplier - 1)));
-                    }
-                    
-                    timeLeft = endSeconds - currentTotalSeconds;
-                    if (timeLeft < 0) timeLeft = 0;
-                } else {
-                    const nextStartSeconds = findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) * 60;
-                    timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-                }
-                
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Update activity timeline
-                updateActivityTimeline(currentActivity, findNextActivity(currentMinutes, currentSeconds, todaySchedule));
+                // Schedule the next update
+                setTimeout(updateTimer, 1000);
             };
         }
 
-        // Helper function to find current activity
-        function findCurrentActivity(currentMinutes, currentSeconds, todaySchedule) {
-            for (let i = 0; i < todaySchedule.length; i++) {
-                const block = todaySchedule[i];
-                const startMinutes = parseTimeToMinutes(block.start);
-                const endMinutes = parseTimeToMinutes(block.end);
-                const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-
-                if (currentTotalSeconds >= startMinutes * 60 && 
-                    currentTotalSeconds < endMinutes * 60) {
-                    return block;
-                }
-            }
-            return { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-        }
-
-        // Helper function to find next activity
-        function findNextActivity(currentMinutes, currentSeconds, todaySchedule) {
-            const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-            
-            // Sort schedule by start time
-            const sortedSchedule = [...todaySchedule].sort((a, b) => 
-                parseTimeToMinutes(a.start) - parseTimeToMinutes(b.start)
-            );
-            
-            // Find the next activity
-            for (let block of sortedSchedule) {
-                if (parseTimeToMinutes(block.start) * 60 > currentTotalSeconds) {
-                    return block;
-                }
-            }
-            
-            // If no next activity found today, return the first activity
-            return sortedSchedule[0];
-        }
-
-        // Helper function to find next activity start time
-        function findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) {
-            const nextActivity = findNextActivity(currentMinutes, currentSeconds, todaySchedule);
-            return parseTimeToMinutes(nextActivity.start);
-        }
-
-        // Function to update activity timeline
-        function updateActivityTimeline(currentActivity, nextActivity) {
-            const currentActivityEl = document.getElementById('currentActivity');
-            const nextActivityEl = document.getElementById('nextActivity');
-            
-            currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentActivity.name}`;
-            currentActivityEl.querySelector('.activity-time').textContent = `${currentActivity.start} - ${currentActivity.end}`;
-            
-            nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextActivity.name}`;
-            nextActivityEl.querySelector('.activity-time').textContent = `${nextActivity.start} - ${nextActivity.end}`;
-        }
-
-        // Function to display April Fools message
+        // Function to show April Fools message
         function showAprilFoolsMessage() {
             // Save original content
-            const originalContainer = document.getElementById('pomodoro-container').innerHTML;
+            const container = document.getElementById('pomodoro-container');
+            if (!container) return; // Safety check
+            
+            const originalContent = container.innerHTML;
             
             // Create April Fools message
-            document.getElementById('pomodoro-container').innerHTML = `
+            container.innerHTML = `
                 <h1 style="font-size: 3em; color: yellow;">APRIL FOOLS!</h1>
                 <p style="font-size: 1.5em;">Your timer was secretly running 1.5x faster!</p>
                 <p>Don't worry, we'll get back to the real schedule in a moment...</p>
@@ -598,11 +1383,23 @@
             let countdown = 10;
             const countdownInterval = setInterval(() => {
                 countdown--;
-                document.getElementById('countdown').textContent = countdown;
+                const countdownElement = document.getElementById('countdown');
+                if (countdownElement) {
+                    countdownElement.textContent = countdown;
+                }
                 
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
-                    document.getElementById('pomodoro-container').innerHTML = originalContainer;
+                    if (container) {
+                        container.innerHTML = originalContent;
+                        
+                        // Force update the timer immediately after restoration
+                        if (originalUpdateTimer) {
+                            originalUpdateTimer();
+                        } else {
+                            updateTimer();
+                        }
+                    }
                 }
             }, 1000);
         }
@@ -625,7 +1422,9 @@
                 document.querySelector('h1'),
                 document.getElementById('timer'),
                 document.querySelector('.activity-name')
-            ];
+            ].filter(el => el); // Filter out any null elements
+            
+            if (elements.length === 0) return; // Safety check
             
             // Choose a random element to glitch
             const element = elements[Math.floor(Math.random() * elements.length)];
@@ -646,7 +1445,9 @@
             
             // Restore after 2 seconds
             setTimeout(() => {
-                element.textContent = originalText;
+                if (element) {
+                    element.textContent = originalText;
+                }
             }, 2000);
         }
 
@@ -679,6 +1480,7 @@
                     
                     // Create message element
                     const messageElement = document.createElement('div');
+                    messageElement.id = 'system-message';
                     messageElement.style.position = 'fixed';
                     messageElement.style.bottom = '20px';
                     messageElement.style.left = '50%';
@@ -690,14 +1492,24 @@
                     messageElement.style.zIndex = '1000';
                     messageElement.style.fontSize = '16px';
                     messageElement.textContent = message;
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(messageElement);
                     
                     // Remove after random time between 3-7 seconds
                     const duration = (Math.random() * 4000) + 3000;
                     setTimeout(() => {
-                        document.body.removeChild(messageElement);
+                        if (document.getElementById('system-message')) {
+                            document.body.removeChild(messageElement);
+                        }
                     }, duration);
+                    
+                    // Failsafe removal
+                    setTimeout(() => {
+                        if (document.getElementById('system-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                    }, duration + 3000);
                 }
             }, 60000); // Every minute
         }
@@ -747,20 +1559,31 @@
             
             // Override with time reversal
             window.updateTimer = function() {
+                // Track override time for failsafe
+                if (!window.updateTimer.__overrideTime) {
+                    window.updateTimer.__overrideTime = new Date().getTime();
+                }
+                window.updateTimer.__isOriginal = false;
+                
                 // Call the original function
                 originalUpdateTimer();
                 
                 // 8% chance to reverse time counting
                 if (Math.random() < 0.08) {
                     const timerElement = document.getElementById('timer');
+                    if (!timerElement) return; // Safety check
+                    
                     const currentTime = timerElement.textContent;
                     
                     // Parse current time
                     const [minutes, seconds] = currentTime.split(':').map(Number);
+                    if (isNaN(minutes) || isNaN(seconds)) return; // Safety check
+                    
                     let totalSeconds = minutes * 60 + seconds;
                     
                     // Show a message that time is reversing
                     const messageElement = document.createElement('div');
+                    messageElement.id = 'time-reversal-message';
                     messageElement.style.position = 'fixed';
                     messageElement.style.top = '30%';
                     messageElement.style.left = '50%';
@@ -773,12 +1596,15 @@
                     messageElement.style.fontSize = '20px';
                     messageElement.style.fontWeight = 'bold';
                     messageElement.textContent = "TIME REVERSING - COUNTDOWN INVERTED";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(messageElement);
                     
                     // Start counting up instead of down for 10-15 seconds
                     const countDuration = Math.floor(Math.random() * 6) + 10;
                     let countElapsed = 0;
+                    
+                    const originalTimeReversal = totalSeconds;
                     
                     const timeReversalInterval = setInterval(() => {
                         // Add one second instead of subtracting
@@ -787,16 +1613,42 @@
                         const newMinutes = Math.floor(totalSeconds / 60);
                         const newSeconds = totalSeconds % 60;
                         
-                        timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                        if (timerElement) {
+                            timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                        }
                         
                         countElapsed++;
                         if (countElapsed >= countDuration) {
                             clearInterval(timeReversalInterval);
+                            
                             // Return to normal
-                            originalUpdateTimer();
-                            document.body.removeChild(messageElement);
+                            if (timerElement) {
+                                // Calculate how much time has passed
+                                const timeDifference = totalSeconds - originalTimeReversal;
+                                
+                                // Call originalUpdateTimer to get a fresh update
+                                originalUpdateTimer();
+                            }
+                            
+                            if (document.getElementById('time-reversal-message')) {
+                                document.body.removeChild(messageElement);
+                            }
                         }
                     }, 1000);
+                    
+                    // Failsafe to ensure message is removed and timer is reset
+                    setTimeout(() => {
+                        if (timeReversalInterval) {
+                            clearInterval(timeReversalInterval);
+                        }
+                        
+                        if (document.getElementById('time-reversal-message')) {
+                            document.body.removeChild(messageElement);
+                        }
+                        
+                        // Reset timer function
+                        originalUpdateTimer();
+                    }, (countDuration + 2) * 1000);
                 }
             };
         }
@@ -810,6 +1662,8 @@
                 if (Math.random() < 0.15) {
                     const container = document.getElementById('pomodoro-container');
                     const timerElement = document.getElementById('timer');
+                    if (!container || !timerElement) return; // Safety check
+                    
                     const currentTime = timerElement.textContent;
                     
                     // Save original content
@@ -824,6 +1678,8 @@
                     // Create 4 timers with slightly different times
                     for (let i = 0; i < 4; i++) {
                         const [minutes, seconds] = currentTime.split(':').map(Number);
+                        if (isNaN(minutes) || isNaN(seconds)) continue; // Safety check
+                        
                         let totalSeconds = minutes * 60 + seconds;
                         
                         // Adjust time slightly for each timer
@@ -852,91 +1708,30 @@
                     
                     // Add auto-restore - CRITICAL TO PREVENT TIMER STOPPING
                     setTimeout(() => {
-                        container.innerHTML = originalContent;
-                        
-                        // IMPORTANT: This ensures the timer continues counting
-                        // Force a timer update immediately after restoring
-                        if (originalUpdateTimer) {
-                            originalUpdateTimer();
-                        } else {
-                            updateTimer();
+                        if (container) {
+                            container.innerHTML = originalContent;
+                            
+                            // IMPORTANT: This ensures the timer continues counting
+                            // Force a timer update immediately after restoring
+                            if (originalUpdateTimer) {
+                                originalUpdateTimer();
+                            } else {
+                                updateTimer();
+                            }
                         }
                     }, 5000);
-                }
-            }, 120000); // Every 2 minutespx';
-                        newTimer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                        newTimer.style.borderRadius = '5px';
-                        newTimer.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                        
-                        multipleTimers.appendChild(newTimer);
-                    }
                     
-                    // Replace content with multiple timers
-                    container.innerHTML = '';
-                    container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
-                    container.appendChild(multipleTimers);
-                    
-                    // Add auto-restore - CRITICAL TO PREVENT TIMER STOPPING
+                    // Failsafe to restore content if something goes wrong
                     setTimeout(() => {
-                        container.innerHTML = originalContent;
-                        
-                        // IMPORTANT: This ensures the timer continues counting
-                        // Force a timer update immediately after restoring
-                        if (originalUpdateTimer) {
-                            originalUpdateTimer();
-                        } else {
-                            updateTimer();
+                        if (container && !container.querySelector('#timer')) {
+                            container.innerHTML = originalContent;
+                            if (originalUpdateTimer) {
+                                originalUpdateTimer();
+                            } else {
+                                updateTimer();
+                            }
                         }
-                    }, 5000);
-                }
-            }, 120000); // Every 2 minutes
-        }
-                    const container = document.getElementById('pomodoro-container');
-                    const timerElement = document.getElementById('timer');
-                    const currentTime = timerElement.textContent;
-                    
-                    // Save original content
-                    const originalContent = container.innerHTML;
-                    
-                    // Create container for multiple timers
-                    const multipleTimers = document.createElement('div');
-                    multipleTimers.style.display = 'flex';
-                    multipleTimers.style.flexWrap = 'wrap';
-                    multipleTimers.style.justifyContent = 'center';
-                    
-                    // Create 4 timers with slightly different times
-                    for (let i = 0; i < 4; i++) {
-                        const [minutes, seconds] = currentTime.split(':').map(Number);
-                        let totalSeconds = minutes * 60 + seconds;
-                        
-                        // Adjust time slightly for each timer
-                        const adjustment = Math.floor(Math.random() * 120) - 60; // -60 to +60 seconds
-                        totalSeconds += adjustment;
-                        if (totalSeconds < 0) totalSeconds = 0;
-                        
-                        const newMinutes = Math.floor(totalSeconds / 60);
-                        const newSeconds = totalSeconds % 60;
-                        
-                        const newTimer = document.createElement('div');
-                        newTimer.style.fontSize = '2em';
-                        newTimer.style.margin = '10px';
-                        newTimer.style.padding = '5px';
-                        newTimer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                        newTimer.style.borderRadius = '5px';
-                        newTimer.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                        
-                        multipleTimers.appendChild(newTimer);
-                    }
-                    
-                    // Replace content with multiple timers
-                    container.innerHTML = '';
-                    container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
-                    container.appendChild(multipleTimers);
-                    
-                    // Restore after 5 seconds
-                    setTimeout(() => {
-                        container.innerHTML = originalContent;
-                    }, 5000);
+                    }, 7000);
                 }
             }, 120000); // Every 2 minutes
         }
@@ -965,6 +1760,7 @@
             
             // Set up the news banner
             const newsBanner = document.getElementById('newsBanner');
+            if (!newsBanner) return; // Safety check
             
             setInterval(() => {
                 // 60% chance every 30 seconds
@@ -986,6 +1782,65 @@
             }, 30000); // Every 30 seconds
         }
 
+        // 11. Spinning Timer - make the timer spin randomly
+        function createSpinningTimer() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 20% chance every 2 minutes
+                if (Math.random() < 0.2) {
+                    const container = document.getElementById('pomodoro-container');
+                    if (!container) return; // Safety check
+                    
+                    // Save the original transform
+                    const originalTransform = container.style.transform;
+                    
+                    // Set transform time for the failsafe
+                    container.dataset.transformTime = new Date().getTime().toString();
+                    
+                    // Apply the spinning animation
+                    container.style.transition = 'transform 2s ease-in-out';
+                    container.style.transform = `rotate(${Math.floor(Math.random() * 720) - 360}deg)`;
+                    
+                    // Restore after 5 seconds
+                    setTimeout(() => {
+                        if (container) {
+                            container.style.transition = 'transform 1s ease-in-out';
+                            container.style.transform = originalTransform || 'none';
+                            container.dataset.transformTime = '0';
+                        }
+                    }, 5000);
+                }
+            }, 120000);
+        }
+        
+        // 12. Upside-down text - flip text upside down
+        function createUpsideDownText() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 15% chance every 3 minutes
+                if (Math.random() < 0.15) {
+                    const container = document.getElementById('pomodoro-container');
+                    if (!container) return; // Safety check
+                    
+                    // Set transform time for the failsafe
+                    container.dataset.transformTime = new Date().getTime().toString();
+                    
+                    // Flip the container upside down
+                    container.style.transform = 'rotate(180deg)';
+                    
+                    // Restore after 6 seconds
+                    setTimeout(() => {
+                        if (container) {
+                            container.style.transform = 'none';
+                            container.dataset.transformTime = '0';
+                        }
+                    }, 6000);
+                }
+            }, 180000);
+        }
+
         // 13. Rick Roll - Randomly play part of "Never Gonna Give You Up"
         function createRickRoll() {
             if (!isAprilFools()) return;
@@ -995,6 +1850,7 @@
                 if (Math.random() < 0.1) {
                     // Create a fake system message first
                     const messageElement = document.createElement('div');
+                    messageElement.id = 'rick-roll-announce';
                     messageElement.style.position = 'fixed';
                     messageElement.style.top = '40%';
                     messageElement.style.left = '50%';
@@ -1007,12 +1863,15 @@
                     messageElement.style.fontSize = '18px';
                     messageElement.style.fontWeight = 'bold';
                     messageElement.textContent = "IMPORTANT ANNOUNCEMENT FROM PRINCIPAL";
+                    messageElement.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(messageElement);
                     
                     // Wait 2 seconds, then show Rick Astley image
                     setTimeout(() => {
-                        document.body.removeChild(messageElement);
+                        if (document.getElementById('rick-roll-announce')) {
+                            document.body.removeChild(messageElement);
+                        }
                         
                         // Create the Rick Roll container
                         const rickRollContainer = document.createElement('div');
@@ -1028,6 +1887,7 @@
                         rickRollContainer.style.justifyContent = 'center';
                         rickRollContainer.style.alignItems = 'center';
                         rickRollContainer.style.zIndex = '2000';
+                        rickRollContainer.dataset.creationTime = new Date().getTime().toString();
                         
                         // Add Rick Astley image
                         const rickImage = document.createElement('div');
@@ -1066,7 +1926,9 @@
                         closeButton.textContent = "Make it stop!";
                         
                         closeButton.addEventListener('click', function() {
-                            document.body.removeChild(rickRollContainer);
+                            if (document.getElementById('rick-roll')) {
+                                document.body.removeChild(rickRollContainer);
+                            }
                         });
                         
                         // Add elements to the container
@@ -1106,12 +1968,15 @@
                     follower.style.zIndex = '1000';
                     follower.style.pointerEvents = 'none'; // So it doesn't interfere with clicking
                     follower.style.transition = 'transform 0.1s ease-out';
+                    follower.dataset.creationTime = new Date().getTime().toString();
                     
                     document.body.appendChild(follower);
                     
                     // Function to update the follower position
                     const moveFollower = (e) => {
-                        follower.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+                        if (follower) {
+                            follower.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+                        }
                     };
                     
                     // Add mousemove event listener
@@ -1176,6 +2041,7 @@
                     notification.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
                     notification.style.transform = 'translateX(400px)';
                     notification.style.transition = 'transform 0.5s ease-out';
+                    notification.dataset.creationTime = new Date().getTime().toString();
                     
                     // Add notification content
                     const notificationTitle = document.createElement('div');
@@ -1189,178 +2055,3 @@
                     notificationContent.textContent = message;
                     
                     // Add elements to notification
-                    notification.appendChild(notificationTitle);
-                    notification.appendChild(notificationContent);
-                    
-                    // Add to body
-                    document.body.appendChild(notification);
-                    
-                    // Animate in
-                    setTimeout(() => {
-                        notification.style.transform = 'translateX(0)';
-                    }, 100);
-                    
-                    // Add close button functionality
-                    notificationTitle.querySelector('span:last-child').addEventListener('click', function() {
-                        notification.style.transform = 'translateX(400px)';
-                        setTimeout(() => {
-                            if (document.getElementById('fake-notification')) {
-                                document.body.removeChild(notification);
-                            }
-                        }, 500);
-                    });
-                    
-                    // Auto remove after 5 seconds
-                    setTimeout(() => {
-                        if (document.getElementById('fake-notification')) {
-                            notification.style.transform = 'translateX(400px)';
-                            setTimeout(() => {
-                                if (document.getElementById('fake-notification')) {
-                                    document.body.removeChild(notification);
-                                }
-                            }, 500);
-                        }
-                    }, 5000);
-                }
-            }, 120000); // Every 2 minutes
-        }
-
-        // Initialize April Fools functions
-        function initAprilFools() {
-            if (isAprilFools()) {
-                console.log("April Fools mode activated!");
-                createRandomPauses();
-                createNumberScramble();
-                createMemoryWipe();
-                createSpeedAcceleration();
-                createGlitchyText();
-                createFakeSystemMessages();
-                createColorChaos();
-                createTimeReversal();
-                createTimerMultiplication();
-                createRandomMotivationalMessages();
-                createSpinningTimer();
-                createUpsideDownText();
-            }
-        }
-
-        // ========================
-        // NORMAL TIMER FUNCTIONALITY
-        // ========================
-
-        function getCSTTime() {
-            return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
-        }
-
-        function formatTime(date) {
-            return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        }
-
-        function changeBackgroundColor() {
-            let newColor;
-            do {
-                newColor = colors[Math.floor(Math.random() * colors.length)];
-            } while (newColor === currentColor);
-            currentColor = newColor;
-            document.body.style.backgroundColor = currentColor;
-        }
-
-        function applyAnimation() {
-            const container = document.getElementById('pomodoro-container');
-            const animation = animations[Math.floor(Math.random() * animations.length)];
-            container.classList.add(animation);
-
-            setTimeout(() => {
-                container.classList.remove(animation);
-                changeBackgroundColor();
-            }, 2000);
-        }
-
-        function parseTimeToMinutes(timeString) {
-            const [time, period] = timeString.split(' ');
-            let [hours, minutes] = time.split(':').map(Number);
-            if (period === 'PM' && hours !== 12) hours += 12;
-            if (period === 'AM' && hours === 12) hours = 0;
-            return hours * 60 + minutes;
-        }
-
-        function updateTimer() {
-            const now = getCSTTime();
-            const currentTimeString = formatTime(now);
-            document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
-
-            const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
-            const todaySchedule = schedule[currentDay];
-
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            const currentSeconds = now.getSeconds();
-
-            let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-            let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-            let isWithinSchedule = false;
-
-            // Find the current block and next block
-            for (let i = 0; i < todaySchedule.length; i++) {
-                const block = todaySchedule[i];
-                const startMinutes = parseTimeToMinutes(block.start);
-                const endMinutes = parseTimeToMinutes(block.end);
-
-                if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
-                    currentBlock = block;
-                    nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
-                    isWithinSchedule = true;
-                    break;
-                }
-            }
-
-            if (!isWithinSchedule) {
-                // Find the next block
-                for (let block of todaySchedule) {
-                    if (parseTimeToMinutes(block.start) > currentMinutes) {
-                        nextBlock = block;
-                        break;
-                    }
-                }
-            }
-
-            if (currentBlock.name !== previousBlockName) {
-                applyAnimation();
-                previousBlockName = currentBlock.name;
-            }
-
-            let timeLeft;
-            if (isWithinSchedule) {
-                const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
-                timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
-            } else {
-                const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
-                timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-            }
-
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-            // Update activity timeline
-            const currentActivityEl = document.getElementById('currentActivity');
-            const nextActivityEl = document.getElementById('nextActivity');
-
-            currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
-            currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
-
-            nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
-            nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
-
-            // Schedule the next update
-            setTimeout(updateTimer, 1000);
-        }
-
-        // Initialize the timer
-        updateTimer();
-        
-        // Initialize April Fools if needed
-        initAprilFools();
-    })();
-    </script>
-</body>
-</html>
