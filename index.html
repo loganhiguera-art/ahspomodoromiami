@@ -850,6 +850,89 @@
                     container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
                     container.appendChild(multipleTimers);
                     
+                    // Add auto-restore - CRITICAL TO PREVENT TIMER STOPPING
+                    setTimeout(() => {
+                        container.innerHTML = originalContent;
+                        
+                        // IMPORTANT: This ensures the timer continues counting
+                        // Force a timer update immediately after restoring
+                        if (originalUpdateTimer) {
+                            originalUpdateTimer();
+                        } else {
+                            updateTimer();
+                        }
+                    }, 5000);
+                }
+            }, 120000); // Every 2 minutespx';
+                        newTimer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        newTimer.style.borderRadius = '5px';
+                        newTimer.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                        
+                        multipleTimers.appendChild(newTimer);
+                    }
+                    
+                    // Replace content with multiple timers
+                    container.innerHTML = '';
+                    container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
+                    container.appendChild(multipleTimers);
+                    
+                    // Add auto-restore - CRITICAL TO PREVENT TIMER STOPPING
+                    setTimeout(() => {
+                        container.innerHTML = originalContent;
+                        
+                        // IMPORTANT: This ensures the timer continues counting
+                        // Force a timer update immediately after restoring
+                        if (originalUpdateTimer) {
+                            originalUpdateTimer();
+                        } else {
+                            updateTimer();
+                        }
+                    }, 5000);
+                }
+            }, 120000); // Every 2 minutes
+        }
+                    const container = document.getElementById('pomodoro-container');
+                    const timerElement = document.getElementById('timer');
+                    const currentTime = timerElement.textContent;
+                    
+                    // Save original content
+                    const originalContent = container.innerHTML;
+                    
+                    // Create container for multiple timers
+                    const multipleTimers = document.createElement('div');
+                    multipleTimers.style.display = 'flex';
+                    multipleTimers.style.flexWrap = 'wrap';
+                    multipleTimers.style.justifyContent = 'center';
+                    
+                    // Create 4 timers with slightly different times
+                    for (let i = 0; i < 4; i++) {
+                        const [minutes, seconds] = currentTime.split(':').map(Number);
+                        let totalSeconds = minutes * 60 + seconds;
+                        
+                        // Adjust time slightly for each timer
+                        const adjustment = Math.floor(Math.random() * 120) - 60; // -60 to +60 seconds
+                        totalSeconds += adjustment;
+                        if (totalSeconds < 0) totalSeconds = 0;
+                        
+                        const newMinutes = Math.floor(totalSeconds / 60);
+                        const newSeconds = totalSeconds % 60;
+                        
+                        const newTimer = document.createElement('div');
+                        newTimer.style.fontSize = '2em';
+                        newTimer.style.margin = '10px';
+                        newTimer.style.padding = '5px';
+                        newTimer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        newTimer.style.borderRadius = '5px';
+                        newTimer.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                        
+                        multipleTimers.appendChild(newTimer);
+                    }
+                    
+                    // Replace content with multiple timers
+                    container.innerHTML = '';
+                    container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
+                    container.appendChild(multipleTimers);
+                    
                     // Restore after 5 seconds
                     setTimeout(() => {
                         container.innerHTML = originalContent;
