@@ -1,4 +1,425 @@
-<!DOCTYPE html>
+// 16. Fake browser update
+        function createFakeBrowserUpdate() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 10% chance every 4 minutes
+                if (Math.random() < 0.1) {
+                    // Create the overlay
+                    const overlay = document.createElement('div');
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100%';
+                    overlay.style.height = '100%';
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+                    overlay.style.color = 'white';
+                    overlay.style.display = 'flex';
+                    overlay.style.flexDirection = 'column';
+                    overlay.style.justifyContent = 'center';
+                    overlay.style.alignItems = 'center';
+                    overlay.style.zIndex = '10000';
+                    overlay.style.textAlign = 'center';
+                    overlay.style.fontFamily = 'Arial, sans-serif';
+                    
+                    overlay.innerHTML = `
+                        <div style="max-width: 500px; padding: 30px;">
+                            <h1 style="font-size: 24px; margin-bottom: 20px;">Browser Update Required</h1>
+                            <p style="margin-bottom: 15px;">Your browser needs to update to continue using this page.</p>
+                            <div style="width: 100%; height: 20px; background-color: #333; border-radius: 10px; margin: 30px 0;">
+                                <div id="fakeBrowserUpdateProgress" style="width: 0%; height: 100%; background-color: #0078D7; border-radius: 10px;"></div>
+                            </div>
+                            <p style="margin-top: 15px;" id="updateText">Downloading update...</p>
+                            <p style="margin-top: 30px; font-size: 12px;">Do not close your browser during this process</p>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(overlay);
+                    
+                    // Fake progress bar
+                    let progress = 0;
+                    const progressBar = document.getElementById('fakeBrowserUpdateProgress');
+                    const updateText = document.getElementById('updateText');
+                    const progressInterval = setInterval(() => {
+                        progress += Math.random() * 15;
+                        if (progress >= 100) {
+                            progress = 100;
+                            clearInterval(progressInterval);
+                            updateText.textContent = "Update complete! Restarting browser...";
+                            
+                            // Remove after 1.5 more seconds
+                            setTimeout(() => {
+                                document.body.removeChild(overlay);
+                            }, 1500);
+                        }
+                        progressBar.style.width = progress + '%';
+                    }, 800);
+                    
+                    // Ensure it gets removed after 10 seconds no matter what
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                            clearInterval(progressInterval);
+                        }
+                    }, 10000);
+                }
+            }, 240000);
+        }
+        
+        // 17. "Admin" chat messages
+        function createAdminMessages() {
+            if (!isAprilFools()) return;
+            
+            const messages = [
+                "ADMIN: All students please ignore the timer, it's malfunctioning today.",
+                "SYSTEM: Remote admin has connected to timer. Monitoring in progress.",
+                "NOTICE: Faculty - reminder that timer settings should not be adjusted by students.",
+                "ADMIN: Timer may display incorrect times today due to server maintenance.",
+                "SYSTEM: Administrative override detected. Timer accuracy compromised.",
+                "SECURITY: Suspicious activity detected on timer. Monitoring all users.",
+                "ADMIN: Tomorrow's schedule canceled due to timer calibration issues.",
+                "IMPORTANT: Principal has requested all students to log extra 30 minutes today.",
+                "SYSTEM: Keystroke logging has been enabled on this timer."
+            ];
+            
+            setInterval(() => {
+                // 15% chance every 2 minutes
+                if (Math.random() < 0.15) {
+                    // Create admin message
+                    const adminMessage = document.createElement('div');
+                    adminMessage.style.position = 'fixed';
+                    adminMessage.style.top = '10px';
+                    adminMessage.style.left = '50%';
+                    adminMessage.style.transform = 'translateX(-50%)';
+                    adminMessage.style.backgroundColor = '#333';
+                    adminMessage.style.color = '#ff0';
+                    adminMessage.style.padding = '10px 20px';
+                    adminMessage.style.borderRadius = '5px';
+                    adminMessage.style.zIndex = '9999';
+                    adminMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.5)';
+                    adminMessage.style.fontFamily = 'monospace';
+                    adminMessage.style.fontWeight = 'bold';
+                    
+                    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                    adminMessage.textContent = randomMessage;
+                    
+                    document.body.appendChild(adminMessage);
+                    
+                    // Remove after 8 seconds
+                    setTimeout(() => {
+                        adminMessage.style.opacity = '0';
+                        adminMessage.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            document.body.removeChild(adminMessage);
+                        }, 500);
+                    }, 8000);
+                }
+            }, 120000);
+        }
+        
+        // 18. Fake virus scan popup
+        function createFakeVirusScan() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 8% chance every 5 minutes
+                if (Math.random() < 0.08) {
+                    // Create the virus scan popup
+                    const virusScan = document.createElement('div');
+                    virusScan.style.position = 'fixed';
+                    virusScan.style.bottom = '20px';
+                    virusScan.style.right = '20px';
+                    virusScan.style.width = '300px';
+                    virusScan.style.backgroundColor = '#f8f8f8';
+                    virusScan.style.border = '1px solid #ddd';
+                    virusScan.style.borderRadius = '5px';
+                    virusScan.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                    virusScan.style.padding = '15px';
+                    virusScan.style.zIndex = '9999';
+                    virusScan.style.fontFamily = 'Arial, sans-serif';
+                    
+                    virusScan.innerHTML = `
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div style="width: 30px; height: 30px; background-color: #f00; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 10px;">
+                                <span style="color: white; font-weight: bold;">!</span>
+                            </div>
+                            <h3 style="margin: 0; font-size: 16px;">Virus Scan Alert</h3>
+                            <div style="margin-left: auto; cursor: pointer;" id="closeVirusScan">✖</div>
+                        </div>
+                        <p style="margin: 10px 0; font-size: 14px;">Suspicious activity detected on this page.</p>
+                        <div style="width: 100%; height: 8px; background-color: #eee; border-radius: 4px; margin: 15px 0;">
+                            <div id="virusScanProgress" style="width: 0%; height: 100%; background-color: #4CAF50; border-radius: 4px;"></div>
+                        </div>
+                        <p style="margin: 10px 0; font-size: 12px;" id="virusScanStatus">Scanning timer processes...</p>
+                        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 10px;" id="virusScanAction">Run Full Scan</button>
+                    `;
+                    
+                    document.body.appendChild(virusScan);
+                    
+                    // Add click event to close button
+                    document.getElementById('closeVirusScan').addEventListener('click', function() {
+                        document.body.removeChild(virusScan);
+                    });
+                    
+                    // Add click event to action button that changes the text
+                    document.getElementById('virusScanAction').addEventListener('click', function() {
+                        this.textContent = "Scanning...";
+                        this.disabled = true;
+                        this.style.backgroundColor = "#999";
+                        
+                        // Start progress bar
+                        const progressBar = document.getElementById('virusScanProgress');
+                        const statusText = document.getElementById('virusScanStatus');
+                        let progress = 0;
+                        
+                        const scanInterval = setInterval(() => {
+                            progress += Math.random() * 20;
+                            if (progress >= 100) {
+                                progress = 100;
+                                clearInterval(scanInterval);
+                                statusText.textContent = "Scan complete! April Fools virus detected!";
+                                document.getElementById('virusScanAction').textContent = "😂 It's a prank!";
+                                document.getElementById('virusScanAction').disabled = false;
+                                document.getElementById('virusScanAction').style.backgroundColor = "#4CAF50";
+                            } else {
+                                const scanMessages = [
+                                    "Scanning timer processes...",
+                                    "Analyzing school network...",
+                                    "Checking for homework viruses...",
+                                    "Scanning for time-wasting malware...",
+                                    "Searching for hidden break extensions..."
+                                ];
+                                statusText.textContent = scanMessages[Math.floor(Math.random() * scanMessages.length)];
+                            }
+                            progressBar.style.width = progress + '%';
+                        }, 800);
+                    });
+                    
+                    // Auto-remove after 25 seconds if not closed
+                    setTimeout(() => {
+                        if (document.body.contains(virusScan)) {
+                            document.body.removeChild(virusScan);
+                        }
+                    }, 25000);
+                }
+            }, 300000);
+        }
+        
+        // 19. Mouse cursor chaos
+        function createMouseChaos() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 10% chance every 3 minutes
+                if (Math.random() < 0.1) {
+                    // Create a fake cursor element
+                    const fakeCursor = document.createElement('div');
+                    fakeCursor.style.position = 'fixed';
+                    fakeCursor.style.width = '20px';
+                    fakeCursor.style.height = '20px';
+                    fakeCursor.style.backgroundImage = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'><path d=\'M 0 0 L 16 8 L 8 8 L 10 16 Z\' fill=\'black\'/></svg>")';
+                    fakeCursor.style.zIndex = '9999';
+                    fakeCursor.style.pointerEvents = 'none'; // Don't capture actual mouse events
+                    
+                    document.body.appendChild(fakeCursor);
+                    
+                    // Create random cursor movements for 10 seconds
+                    let movementTime = 0;
+                    const maxMovementTime = 10000; // 10 seconds
+                    const moveInterval = 50; // Move every 50ms
+                    let lastX = Math.random() * window.innerWidth;
+                    let lastY = Math.random() * window.innerHeight;
+                    
+                    fakeCursor.style.left = lastX + 'px';
+                    fakeCursor.style.top = lastY + 'px';
+                    
+                    const moveTimer = setInterval(() => {
+                        movementTime += moveInterval;
+                        
+                        // Randomly move towards one of the page elements
+                        const targetElements = [
+                            document.getElementById('timer'),
+                            document.getElementById('currentActivity'),
+                            document.getElementById('nextActivity'),
+                            document.querySelector('h1')
+                        ];
+                        
+                        const targetElement = targetElements[Math.floor(Math.random() * targetElements.length)];
+                        
+                        if (targetElement) {
+                            const rect = targetElement.getBoundingClientRect();
+                            const targetX = rect.left + Math.random() * rect.width;
+                            const targetY = rect.top + Math.random() * rect.height;
+                            
+                            // Move towards target with some randomness
+                            const dx = (targetX - lastX) * 0.2 + (Math.random() * 10 - 5);
+                            const dy = (targetY - lastY) * 0.2 + (Math.random() * 10 - 5);
+                            
+                            lastX += dx;
+                            lastY += dy;
+                            
+                            fakeCursor.style.left = lastX + 'px';
+                            fakeCursor.style.top = lastY + 'px';
+                            
+                            // Occasionally simulate a click
+                            if (Math.random() < 0.1) {
+                                // Create click effect
+                                const clickEffect = document.createElement('div');
+                                clickEffect.style.position = 'fixed';
+                                clickEffect.style.left = (lastX - 10) + 'px';
+                                clickEffect.style.top = (lastY - 10) + 'px';
+                                clickEffect.style.width = '20px';
+                                clickEffect.style.height = '20px';
+                                clickEffect.style.borderRadius = '50%';
+                                clickEffect.style.backgroundColor = 'rgba(255,0,0,0.5)';
+                                clickEffect.style.zIndex = '9998';
+                                clickEffect.style.transform = 'scale(1)';
+                                clickEffect.style.opacity = '1';
+                                clickEffect.style.transition = 'transform 0.5s, opacity 0.5s';
+                                
+                                document.body.appendChild(clickEffect);
+                                
+                                setTimeout(() => {
+                                    clickEffect.style.transform = 'scale(2)';
+                                    clickEffect.style.opacity = '0';
+                                    
+                                    setTimeout(() => {
+                                        document.body.removeChild(clickEffect);
+                                    }, 500);
+                                }, 10);
+                            }
+                        }
+                        
+                        if (movementTime >= maxMovementTime) {
+                            clearInterval(moveTimer);
+                            document.body.removeChild(fakeCursor);
+                        }
+                    }, moveInterval);
+                }
+            }, 180000);
+        }
+        
+        // 20. Fake notification sounds
+        function createFakeNotificationSounds() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 15% chance every 2 minutes
+                if (Math.random() < 0.15) {
+                    // Create fake notification sound
+                    const notificationSound = document.createElement('audio');
+                    const soundTypes = [
+                        'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAFbgD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwAqUAAAAALgAABTIgJAZHTQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xBkCY/wAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV',
+                        'data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAGAAAJrQBiYmJiYmJiYmJiYmJiYmJiYmJiep6enp6enp6enp6enp6enp6enp7R0dHR0dHR0dHR0dHR0dHR0dHR/////////////////////wAAAABQTEFNRTMuMTAwBHYAAAAAAAAAADUgJAUXiQABzAAAAmPMLBKsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//vAZAAAANcAVqUAAAivIlrZzCAAJ1pDw7mHgBJ9C3fHMIACqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
+                        'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAGwQDd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d//////////////////////////////////////////////////////////////////8AAAA8TEFNRTMuMTAwA8MAAAAAAAAAABSAJAPoQQABmgAAAehz7vHkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sgRAAP8JMBVIAAACKAACWAAAAQL0LY/55gAI3oWw/xDAARERHEREQiIiIiEQiImZmZmZmZmd3d3c3e7u7u93d3d7u7u7u93d3cAiIiIBERERCIiIiARERERHZmZm',
+                    ];
+                    
+                    notificationSound.src = soundTypes[Math.floor(Math.random() * soundTypes.length)];
+                    notificationSound.volume = 0.3;
+                    
+                    // Play the sound
+                    notificationSound.play();
+                    
+                    // Create a visual notification as well
+                    const notificationTypes = [
+                        { title: "New Message", message: "Teacher: Please ignore the timer today" },
+                        { title: "Calendar Alert", message: "Test rescheduled for tomorrow morning" },
+                        { title: "System Update", message: "Timer update available. Click to install." },
+                        { title: "Announcement", message: "All classes dismissed 30 minutes early today" },
+                        { title: "Reminder", message: "Don't forget to submit assignment by 3 PM" }
+                    ];
+                    
+                    const randomNotification = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+                    
+                    const notification = document.createElement('div');
+                    notification.style.position = 'fixed';
+                    notification.style.top = '10px';
+                    notification.style.right = '10px';
+                    notification.style.width = '300px';
+                    notification.style.backgroundColor = 'white';
+                    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                    notification.style.borderRadius = '5px';
+                    notification.style.padding = '10px';
+                    notification.style.zIndex = '9999';
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.3s';
+                    
+                    notification.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; background-color: #4285F4; border-radius: 50%; margin-right: 10px; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">!</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 16px;">${randomNotification.title}</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 14px;">${randomNotification.message}</p>
+                            </div>
+                            <div style="margin-left: auto; cursor: pointer;" onclick="this.parentNode.parentNode.style.opacity='0'; setTimeout(() => { document.body.removeChild(this.parentNode.parentNode); }, 300);">✖</div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Fade in
+                    setTimeout(() => {
+                        notification.style.opacity = '1';
+                    }, 100);
+                    
+                    // Fade out after 6 seconds
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        setTimeout(() => {
+                            if (document.body.contains(notification)) {
+                                document.body.removeChild(notification);
+                            }
+                        }, 300);
+                    }, 6000);
+                }
+            }, 120000);
+        }        // 11. Spinning Timer - make the timer spin randomly
+        function createSpinningTimer() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 20% chance every 2 minutes
+                if (Math.random() < 0.2) {
+                    const container = document.getElementById('pomodoro-container');
+                    
+                    // Save the original transform
+                    const originalTransform = container.style.transform;
+                    
+                    // Apply the spinning animation
+                    container.style.transition = 'transform 2s ease-in-out';
+                    container.style.transform = `rotate(${Math.floor(Math.random() * 720) - 360}deg)`;
+                    
+                    // Restore after 5 seconds
+                    setTimeout(() => {
+                        container.style.transition = 'transform 1s ease-in-out';
+                        container.style.transform = originalTransform;
+                    }, 5000);
+                }
+            }, 120000);
+        }
+        
+        // 12. Upside-down text - flip text upside down
+        function createUpsideDownText() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 15% chance every 3 minutes
+                if (Math.random() < 0.15) {
+                    const container = document.getElementById('pomodoro-container');
+                    
+                    // Save original content
+                    const originalContent = container.innerHTML;
+                    
+                    // Flip the container upside down
+                    container.style.transform = 'rotate(180deg)';
+                    
+                    // Restore after 6 seconds
+                    setTimeout(() => {
+                        container.style.transform = 'none';
+                    }, 6000);
+                }
+            }, 180000);
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -336,6 +757,9 @@
                     // Pick a random message
                     const messageText = pauseMessages[Math.floor(Math.random() * pauseMessages.length)];
                     
+                    // Save the original updateTimer function temporarily
+                    const tempUpdateTimer = window.updateTimer;
+                    
                     // Create and display a fake pause message
                     const pauseMessage = document.createElement('div');
                     pauseMessage.style.position = 'fixed';
@@ -355,9 +779,15 @@
                     // Random pause duration between 3-8 seconds
                     const pauseDuration = (Math.floor(Math.random() * 5) + 3) * 1000;
                     
-                    // Remove after pause duration
+                    // Remove after pause duration and ENSURE timer resumes
                     setTimeout(() => {
                         document.body.removeChild(pauseMessage);
+                        // CRITICAL: Make sure the timer function is restored
+                        if (window.updateTimer !== tempUpdateTimer) {
+                            window.updateTimer = tempUpdateTimer;
+                        }
+                        // Force an immediate update
+                        window.updateTimer();
                     }, pauseDuration);
                 }
             }, 90000); // Check every 90 seconds
@@ -892,52 +1322,205 @@
             }, 30000); // Every 30 seconds
         }
 
-        // 11. Spinning Timer - make the timer spin randomly
-        function createSpinningTimer() {
+        // 13. Create a trollface that pops up occasionally
+        function createTrollFace() {
             if (!isAprilFools()) return;
             
             setInterval(() => {
-                // 20% chance every 2 minutes
+                // 20% chance every minute
                 if (Math.random() < 0.2) {
-                    const container = document.getElementById('pomodoro-container');
+                    // Create troll face element
+                    const trollFace = document.createElement('div');
+                    trollFace.style.position = 'fixed';
+                    trollFace.style.width = '300px';
+                    trollFace.style.height = '300px';
+                    trollFace.style.backgroundColor = 'transparent';
+                    trollFace.style.zIndex = '9999';
+                    trollFace.style.transition = 'all 0.5s ease';
                     
-                    // Save the original transform
-                    const originalTransform = container.style.transform;
+                    // Use ASCII art for troll face
+                    trollFace.innerHTML = `
+                        <div style="font-family: monospace; color: black; font-size: 16px; background-color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <pre style="margin: 0;">
+░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄░░░░░░░
+░░░░░█░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░▀▀▄░░░░
+░░░░█░░░▒▒▒▒▒▒░░░░░░░░▒▒▒░░█░░░
+░░░█░░░░░░▄██▀▄▄░░░░░▄▄▄░░░░█░░
+░▄▀▒▄▄▄▒░█▀▀▀▀▄▄█░░░██▄▄█░░░░█░
+█░▒█▒▄░▀▄▄▄▀░░░░░░░░░░░▒▒▒▒▒░█
+█░▒█░█▀▄▄░░░░░█▀░░░░▀▄░░▄▀▀▀▄▒█
+░█░▀▄░█▄░█▀▄▄░▀░▀▀░▄▄▀░░░░█░░█░
+░░█░░░▀▄▀█▄▄░█▀▀▀▄▄▄▄▀▀█▀██░█░░
+░░░█░░░░██░░▀█▄▄▄█▄▄█▄████░█░░░
+░░░░█░░░░▀▀▄░█░░░█░█▀██████░█░░
+░░░░░▀▄░░░░░▀▀▄▄▄█▄█▄█▄█▄▀░░█░░
+░░░░░░░▀▄▄░▒▒▒▒░░░░░░░░░░▒░░░█░
+░░░░░░░░░░▀▀▄▄░▒▒▒▒▒▒▒▒▒▒░░░░█░
+░░░░░░░░░░░░░░▀▄▄▄▄▄░░░░░░░░█░░
+            </pre>
+                            <p style="margin-top: 10px; font-weight: bold;">APRIL FOOLS!</p>
+                        </div>
+                    `;
                     
-                    // Apply the spinning animation
-                    container.style.transition = 'transform 2s ease-in-out';
-                    container.style.transform = `rotate(${Math.floor(Math.random() * 720) - 360}deg)`;
+                    // Random position
+                    const positions = ['top:0;left:0;', 'top:0;right:0;', 'bottom:0;left:0;', 'bottom:0;right:0;', 'top:50%;left:50%;transform:translate(-50%,-50%);'];
+                    const randomPosition = positions[Math.floor(Math.random() * positions.length)];
+                    trollFace.style.cssText += randomPosition;
                     
-                    // Restore after 5 seconds
+                    document.body.appendChild(trollFace);
+                    
+                    // Make disappear after 2-4 seconds
+                    const duration = Math.floor(Math.random() * 2000) + 2000;
                     setTimeout(() => {
-                        container.style.transition = 'transform 1s ease-in-out';
-                        container.style.transform = originalTransform;
-                    }, 5000);
+                        trollFace.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(trollFace);
+                        }, 500);
+                    }, duration);
                 }
-            }, 120000);
+            }, 60000);
         }
         
-        // 12. Upside-down text - flip text upside down
-        function createUpsideDownText() {
+        // 14. Fake error screens
+        function createFakeErrors() {
             if (!isAprilFools()) return;
             
             setInterval(() => {
-                // 15% chance every 3 minutes
-                if (Math.random() < 0.15) {
-                    const container = document.getElementById('pomodoro-container');
+                // 10% chance every 3 minutes
+                if (Math.random() < 0.1) {
+                    // Save the original content
+                    const originalContainer = document.getElementById('pomodoro-container').innerHTML;
+                    const originalBackground = document.body.style.backgroundColor;
                     
-                    // Save original content
-                    const originalContent = container.innerHTML;
+                    // Create error screen options
+                    const errorScreens = [
+                        {
+                            background: '#0000aa',
+                            content: `
+                                <div style="font-family: monospace; color: white; text-align: center; padding: 50px;">
+                                    <h1 style="font-size: 24px;">A problem has been detected</h1>
+                                    <p style="font-size: 18px; margin-top: 20px;">TIMER_COUNTDOWN_FAILURE</p>
+                                    <p style="margin-top: 30px;">If this is the first time you've seen this error screen, restart your timer.</p>
+                                    <p style="margin-top: 10px;">Technical information:</p>
+                                    <p style="margin-top: 10px;">*** STOP: 0x000000D1 (0x0000000C, 0x00000002, 0x00000000, 0xF78DA064)</p>
+                                    <p style="margin-top: 40px;">Beginning dump of physical memory...</p>
+                                </div>
+                            `
+                        },
+                        {
+                            background: '#00aa00',
+                            content: `
+                                <div style="font-family: monospace; color: white; text-align: left; padding: 50px;">
+                                    <p>> TIMER.EXE has crashed unexpectedly</p>
+                                    <p>> Attempting to recover session data...</p>
+                                    <p>> ERROR: Missing time segments detected</p>
+                                    <p>> APRIL_FOOLS.DLL loaded successfully</p>
+                                    <p>> Executing countermeasures...</p>
+                                    <p>> Please wait...</p>
+                                </div>
+                            `
+                        },
+                        {
+                            background: '#ffffff',
+                            content: `
+                                <div style="font-family: sans-serif; text-align: center; padding: 50px;">
+                                    <h1 style="color: #ff0000; font-size: 28px;">⚠️ CRITICAL ERROR ⚠️</h1>
+                                    <p style="font-size: 18px; margin-top: 20px;">Your timer is experiencing technical difficulties.</p>
+                                    <p style="margin-top: 20px;">Error code: PRANK-404</p>
+                                    <div style="margin-top: 30px; width: 100%; height: 20px; background-color: #ddd; border-radius: 10px;">
+                                        <div id="fakeProgressBar" style="width: 0%; height: 100%; background-color: #4CAF50; border-radius: 10px;"></div>
+                                    </div>
+                                    <p style="margin-top: 10px;">Restoring timer functionality...</p>
+                                </div>
+                            `
+                        }
+                    ];
                     
-                    // Flip the container upside down
-                    container.style.transform = 'rotate(180deg)';
+                    // Choose a random error screen
+                    const errorScreen = errorScreens[Math.floor(Math.random() * errorScreens.length)];
                     
-                    // Restore after 6 seconds
+                    // Apply the error screen
+                    document.body.style.backgroundColor = errorScreen.background;
+                    document.getElementById('pomodoro-container').innerHTML = errorScreen.content;
+                    
+                    // If it's the progress bar error, animate it
+                    if (document.getElementById('fakeProgressBar')) {
+                        let width = 0;
+                        const progressInterval = setInterval(() => {
+                            width += 5;
+                            document.getElementById('fakeProgressBar').style.width = width + '%';
+                            if (width >= 100) {
+                                clearInterval(progressInterval);
+                            }
+                        }, 200);
+                    }
+                    
+                    // Restore after 5-8 seconds
+                    const duration = Math.floor(Math.random() * 3000) + 5000;
                     setTimeout(() => {
-                        container.style.transform = 'none';
-                    }, 6000);
+                        document.body.style.backgroundColor = originalBackground;
+                        document.getElementById('pomodoro-container').innerHTML = originalContainer;
+                        // Force a timer update
+                        window.updateTimer();
+                    }, duration);
                 }
             }, 180000);
+        }
+        
+        // 15. Rick Roll popup
+        function createRickRoll() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 5% chance every 5 minutes
+                if (Math.random() < 0.05) {
+                    // Create the popup
+                    const rickRoll = document.createElement('div');
+                    rickRoll.style.position = 'fixed';
+                    rickRoll.style.top = '50%';
+                    rickRoll.style.left = '50%';
+                    rickRoll.style.transform = 'translate(-50%, -50%)';
+                    rickRoll.style.backgroundColor = 'white';
+                    rickRoll.style.border = '3px solid black';
+                    rickRoll.style.borderRadius = '10px';
+                    rickRoll.style.padding = '20px';
+                    rickRoll.style.zIndex = '9999';
+                    rickRoll.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                    rickRoll.style.maxWidth = '80%';
+                    
+                    rickRoll.innerHTML = `
+                        <div style="text-align: center;">
+                            <h2 style="margin-top: 0;">IMPORTANT TIMER UPDATE</h2>
+                            <p>Your timer has been selected for a critical firmware upgrade.</p>
+                            <p>The new features include:</p>
+                            <ul style="text-align: left;">
+                                <li>Never gonna give you up</li>
+                                <li>Never gonna let you down</li>
+                                <li>Never gonna run around</li>
+                                <li>And desert you</li>
+                            </ul>
+                            <div style="margin: 15px 0;">
+                                <button id="rickRollClose" style="padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Install Update</button>
+                            </div>
+                            <p style="font-size: 12px; color: #666;">You've been Rick Roll'd!</p>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(rickRoll);
+                    
+                    // Add click event to close button
+                    document.getElementById('rickRollClose').addEventListener('click', function() {
+                        document.body.removeChild(rickRoll);
+                    });
+                    
+                    // Auto-remove after 15 seconds anyway
+                    setTimeout(() => {
+                        if (document.body.contains(rickRoll)) {
+                            document.body.removeChild(rickRoll);
+                        }
+                    }, 15000);
+                }
+            }, 300000);
         }
 
         // Initialize April Fools functions
@@ -956,6 +1539,14 @@
                 createRandomMotivationalMessages();
                 createSpinningTimer();
                 createUpsideDownText();
+                createTrollFace();
+                createFakeErrors();
+                createRickRoll();
+                createFakeBrowserUpdate();
+                createAdminMessages();
+                createFakeVirusScan();
+                createMouseChaos();
+                createFakeNotificationSounds();
             }
         }
 
