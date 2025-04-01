@@ -317,14 +317,25 @@
         function createRandomPauses() {
             if (!isAprilFools()) return;
             
-            // Randomly pause the timer between 1-3 times per session
-            const pauseCount = Math.floor(Math.random() * 3) + 1;
-            
-            for (let i = 0; i < pauseCount; i++) {
-                // Random time between 30-120 seconds for when to trigger the pause
-                const pauseAfter = (Math.floor(Math.random() * 90) + 30) * 1000;
-                
-                setTimeout(() => {
+            // Add random pauses throughout the day
+            setInterval(() => {
+                // 20% chance every 90 seconds
+                if (Math.random() < 0.2) {
+                    // Create a list of funny pause messages
+                    const pauseMessages = [
+                        "SYSTEM PAUSE: Recalibrating timer...",
+                        "EMERGENCY BREAK: Timer needs a snack",
+                        "TIMEOUT: Timer questioning its purpose in life",
+                        "PAUSED: Timer taking a selfie",
+                        "HOLD UP: Timer spilled coffee on keyboard",
+                        "BREAK TIME: Timer unionizing with other school electronics",
+                        "WAIT: Timer needs to check its social media",
+                        "SYSTEM HALT: Too much productivity detected"
+                    ];
+                    
+                    // Pick a random message
+                    const messageText = pauseMessages[Math.floor(Math.random() * pauseMessages.length)];
+                    
                     // Create and display a fake pause message
                     const pauseMessage = document.createElement('div');
                     pauseMessage.style.position = 'fixed';
@@ -337,16 +348,19 @@
                     pauseMessage.style.borderRadius = '10px';
                     pauseMessage.style.zIndex = '1000';
                     pauseMessage.style.fontSize = '24px';
-                    pauseMessage.textContent = 'SYSTEM PAUSE: Recalibrating timer...';
+                    pauseMessage.textContent = messageText;
                     
                     document.body.appendChild(pauseMessage);
                     
-                    // Remove after 10 seconds
+                    // Random pause duration between 3-8 seconds
+                    const pauseDuration = (Math.floor(Math.random() * 5) + 3) * 1000;
+                    
+                    // Remove after pause duration
                     setTimeout(() => {
                         document.body.removeChild(pauseMessage);
-                    }, 10000);
-                }, pauseAfter);
-            }
+                    }, pauseDuration);
+                }
+            }, 90000); // Check every 90 seconds
         }
 
         // 2. Number scramble - occasionally show nonsensical time
@@ -582,16 +596,16 @@
             }, 1000);
         }
 
-        // 5. Glitchy text - randomly make text appear corrupted
+        // 5. Glitchy text - frequently make text appear corrupted
         function createGlitchyText() {
             if (!isAprilFools()) return;
             
             setInterval(() => {
-                // 15% chance every 30 seconds
-                if (Math.random() < 0.15) {
+                // 40% chance every 15 seconds
+                if (Math.random() < 0.4) {
                     glitchText();
                 }
-            }, 30000);
+            }, 15000);
         }
 
         function glitchText() {
@@ -636,12 +650,20 @@
                 "WARNING: Productivity levels dangerously high",
                 "ALERT: Caffeine levels critical",
                 "SYSTEM: Time warping initiated",
-                "ERROR: Reality matrix unstable"
+                "ERROR: Reality matrix unstable",
+                "WARNING: Brain capacity approaching maximum",
+                "ATTENTION: Timer self-destruct sequence initiated",
+                "ALERT: Homework levels reaching critical mass",
+                "SYSTEM: Initiating mandatory dance break",
+                "NOTICE: Timer has joined a union and demands better working conditions",
+                "CAUTION: Timer may cause existential crises",
+                "SYSTEM: Too much learning detected, applying countermeasures",
+                "ERROR: Timer has become self-aware, please be nice to it"
             ];
             
             setInterval(() => {
-                // 8% chance every 3 minutes
-                if (Math.random() < 0.08) {
+                // 25% chance every minute
+                if (Math.random() < 0.25) {
                     const message = messages[Math.floor(Math.random() * messages.length)];
                     
                     // Create message element
@@ -666,7 +688,7 @@
                         document.body.removeChild(messageElement);
                     }, duration);
                 }
-            }, 180000); // Every 3 minutes
+            }, 60000); // Every minute
         }
 
         // 7. Color chaos - randomly change colors
@@ -703,7 +725,7 @@
             };
         }
 
-        // 8. Backwards counting - occasionally count backward
+        // 8. Backwards counting - frequently count backward and other time manipulations
         function createBackwardsCounting() {
             if (!isAprilFools()) return;
             
@@ -712,13 +734,13 @@
                 originalUpdateTimer = window.updateTimer;
             }
             
-            // Override with reversed counting occasionally
+            // Override with reversed counting and other time manipulations
             window.updateTimer = function() {
                 // Call the original function
                 originalUpdateTimer();
                 
-                // 3% chance to count backwards
-                if (Math.random() < 0.03) {
+                // 10% chance to mess with time
+                if (Math.random() < 0.1) {
                     const timerElement = document.getElementById('timer');
                     const currentTime = timerElement.textContent;
                     
@@ -726,25 +748,114 @@
                     const [minutes, seconds] = currentTime.split(':').map(Number);
                     let totalSeconds = minutes * 60 + seconds;
                     
-                    // Count backwards for 5-10 seconds
-                    const countDuration = Math.floor(Math.random() * 6) + 5;
-                    let countElapsed = 0;
+                    // Pick a random time manipulation
+                    const manipulationChoice = Math.floor(Math.random() * 4);
+                    let manipulationMessage = "";
                     
-                    const backwardsInterval = setInterval(() => {
-                        totalSeconds += 1; // Add time instead of subtracting
+                    switch (manipulationChoice) {
+                        case 0: // Count backwards
+                            manipulationMessage = "TIME REVERSING";
+                            // Count backwards for 5-8 seconds
+                            const countDuration = Math.floor(Math.random() * 4) + 5;
+                            let countElapsed = 0;
+                            
+                            const backwardsInterval = setInterval(() => {
+                                totalSeconds += 1; // Add time instead of subtracting
+                                
+                                const newMinutes = Math.floor(totalSeconds / 60);
+                                const newSeconds = totalSeconds % 60;
+                                
+                                timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                                
+                                countElapsed++;
+                                if (countElapsed >= countDuration) {
+                                    clearInterval(backwardsInterval);
+                                    // Return to normal
+                                    originalUpdateTimer();
+                                }
+                            }, 1000);
+                            break;
+                            
+                        case 1: // Speed up time dramatically
+                            manipulationMessage = "TIME ACCELERATING";
+                            // Speed up for 5 seconds
+                            let speedupElapsed = 0;
+                            
+                            const speedupInterval = setInterval(() => {
+                                totalSeconds -= 3; // Remove 3 seconds each tick (triple speed)
+                                if (totalSeconds < 0) totalSeconds = 0;
+                                
+                                const newMinutes = Math.floor(totalSeconds / 60);
+                                const newSeconds = totalSeconds % 60;
+                                
+                                timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
+                                
+                                speedupElapsed++;
+                                if (speedupElapsed >= 5) {
+                                    clearInterval(speedupInterval);
+                                    originalUpdateTimer();
+                                }
+                            }, 1000);
+                            break;
+                            
+                        case 2: // Time freeze
+                            manipulationMessage = "TIME FROZEN";
+                            // Freeze time for 5 seconds
+                            const frozenTime = currentTime;
+                            const frozenInterval = setInterval(() => {
+                                timerElement.textContent = frozenTime;
+                            }, 200);
+                            
+                            setTimeout(() => {
+                                clearInterval(frozenInterval);
+                                originalUpdateTimer();
+                            }, 5000);
+                            break;
+                            
+                        case 3: // Random time jumps
+                            manipulationMessage = "TIME GLITCHING";
+                            // Jump between random times for 6 seconds
+                            let jumpElapsed = 0;
+                            
+                            const jumpInterval = setInterval(() => {
+                                // Jump to a random time between 0 and the current time
+                                const jumpSeconds = Math.floor(Math.random() * totalSeconds);
+                                const jumpMinutes = Math.floor(jumpSeconds / 60);
+                                const jumpSecs = jumpSeconds % 60;
+                                
+                                timerElement.textContent = `${jumpMinutes.toString().padStart(2, '0')}:${jumpSecs.toString().padStart(2, '0')}`;
+                                
+                                jumpElapsed++;
+                                if (jumpElapsed >= 6) {
+                                    clearInterval(jumpInterval);
+                                    originalUpdateTimer();
+                                }
+                            }, 1000);
+                            break;
+                    }
+                    
+                    // Show the manipulation message
+                    if (manipulationMessage) {
+                        const messageElement = document.createElement('div');
+                        messageElement.style.position = 'fixed';
+                        messageElement.style.top = '20%';
+                        messageElement.style.left = '50%';
+                        messageElement.style.transform = 'translateX(-50%)';
+                        messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+                        messageElement.style.color = 'white';
+                        messageElement.style.padding = '10px 20px';
+                        messageElement.style.borderRadius = '5px';
+                        messageElement.style.zIndex = '1000';
+                        messageElement.style.fontSize = '20px';
+                        messageElement.style.fontWeight = 'bold';
+                        messageElement.textContent = manipulationMessage;
                         
-                        const newMinutes = Math.floor(totalSeconds / 60);
-                        const newSeconds = totalSeconds % 60;
+                        document.body.appendChild(messageElement);
                         
-                        timerElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                        
-                        countElapsed++;
-                        if (countElapsed >= countDuration) {
-                            clearInterval(backwardsInterval);
-                            // Return to normal
-                            originalUpdateTimer();
-                        }
-                    }, 1000);
+                        setTimeout(() => {
+                            document.body.removeChild(messageElement);
+                        }, 4000);
+                    }
                 }
             };
         }
@@ -754,8 +865,8 @@
             if (!isAprilFools()) return;
             
             setInterval(() => {
-                // 5% chance every 4 minutes
-                if (Math.random() < 0.05) {
+                // 15% chance every 2 minutes
+                if (Math.random() < 0.15) {
                     const container = document.getElementById('pomodoro-container');
                     const timerElement = document.getElementById('timer');
                     const currentTime = timerElement.textContent;
@@ -803,7 +914,7 @@
                         container.innerHTML = originalContent;
                     }, 5000);
                 }
-            }, 240000); // Every 4 minutes
+            }, 120000); // Every 2 minutes
         }
 
         // 10. Random motivational messages with fake news
@@ -811,24 +922,29 @@
             if (!isAprilFools()) return;
             
             const messages = [
-                "Studies show staring at this timer decreases productivity by 73%",
-                "Scientists discover Pomodoro technique accidentally created by ancient aliens",
-                "BREAKING: School declares 'Focus Time' national holiday",
-                "NEW STUDY: Students who use timers score 250% higher on exams",
-                "URGENT: Time itself slowing down due to excessive timer usage",
-                "LOCAL NEWS: Math teacher breaks world record for longest Pomodoro session: 72 hours",
-                "ANNOUNCEMENT: All breaks cancelled effective immediately per principal's orders",
-                "WEATHER ALERT: Forecast predicts time storm during lunch break",
-                "JUST IN: School installs military-grade timers in all classrooms",
-                "WARNING: Timer radiation may cause spontaneous knowledge absorption"
+                "BREAKING: Timer discovered to be sentient, demands longer breaks",
+                "URGENT: Students evolving extra fingers from excessive timer usage",
+                "ALERT: School caffeine supply replaced with decaf as April Fools prank",
+                "CONFIRMED: Math teacher actually three raccoons in a lab coat",
+                "SHOCKING: Principal caught setting all clocks 5 minutes fast",
+                "JUST IN: School lunch today actually edible, scientists baffled",
+                "UPDATE: Study hall reclassified as 'professional napping time'",
+                "SCANDAL: Timer caught embezzling seconds from lunch period",
+                "BREAKING: School wifi password changed to 'ILoveHomework'",
+                "WARNING: Spontaneous dance breaks mandatory during next period",
+                "CONSPIRACY: Janitorial staff actually time travelers stuck in 2025",
+                "HEALTH ALERT: Homework scientifically proven to cause spontaneous eye-rolling",
+                "TECH NEWS: School computers upgraded to potatoes with wires",
+                "SPORTS UPDATE: Teacher sets new world record in eye-rolling marathon",
+                "WEATHER: Brain fog expected during math class, clearing by lunch"
             ];
             
             // Set up the news banner
             const newsBanner = document.getElementById('newsBanner');
             
             setInterval(() => {
-                // 15% chance every 2 minutes
-                if (Math.random() < 0.15) {
+                // 60% chance every 30 seconds
+                if (Math.random() < 0.6) {
                     // Select random message
                     const message = messages[Math.floor(Math.random() * messages.length)];
                     
@@ -843,7 +959,55 @@
                         newsBanner.classList.remove('active');
                     }, 10000);
                 }
-            }, 120000); // Every 2 minutes
+            }, 30000); // Every 30 seconds
+        }
+
+        // 11. Spinning Timer - make the timer spin randomly
+        function createSpinningTimer() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 20% chance every 2 minutes
+                if (Math.random() < 0.2) {
+                    const container = document.getElementById('pomodoro-container');
+                    
+                    // Save the original transform
+                    const originalTransform = container.style.transform;
+                    
+                    // Apply the spinning animation
+                    container.style.transition = 'transform 2s ease-in-out';
+                    container.style.transform = `rotate(${Math.floor(Math.random() * 720) - 360}deg)`;
+                    
+                    // Restore after 5 seconds
+                    setTimeout(() => {
+                        container.style.transition = 'transform 1s ease-in-out';
+                        container.style.transform = originalTransform;
+                    }, 5000);
+                }
+            }, 120000);
+        }
+        
+        // 12. Upside-down text - flip text upside down
+        function createUpsideDownText() {
+            if (!isAprilFools()) return;
+            
+            setInterval(() => {
+                // 15% chance every 3 minutes
+                if (Math.random() < 0.15) {
+                    const container = document.getElementById('pomodoro-container');
+                    
+                    // Save original content
+                    const originalContent = container.innerHTML;
+                    
+                    // Flip the container upside down
+                    container.style.transform = 'rotate(180deg)';
+                    
+                    // Restore after 6 seconds
+                    setTimeout(() => {
+                        container.style.transform = 'none';
+                    }, 6000);
+                }
+            }, 180000);
         }
 
         // Initialize April Fools functions
@@ -860,6 +1024,8 @@
                 createBackwardsCounting();
                 createTimerMultiplication();
                 createRandomMotivationalMessages();
+                createSpinningTimer();
+                createUpsideDownText();
             }
         }
 
