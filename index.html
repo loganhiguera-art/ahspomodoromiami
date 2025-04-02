@@ -85,6 +85,7 @@
             opacity: 0.8;
         }
 
+
         /* Animation: Grow */
         @keyframes grow {
             0% { transform: scale(1); }
@@ -93,6 +94,7 @@
         .grow-animation {
             animation: grow 2s forwards;
         }
+
 
         /* Animation: Fall */
         @keyframes fall {
@@ -103,6 +105,7 @@
             animation: fall 2s forwards;
         }
 
+
         /* Animation: Roll */
         @keyframes roll {
             0% { transform: rotate(0deg) translateX(0); }
@@ -111,6 +114,7 @@
         .roll-animation {
             animation: roll 2s forwards;
         }
+
 
         /* Animation: Explode */
         @keyframes explode {
@@ -121,24 +125,133 @@
         .explode-animation {
             animation: explode 1s forwards;
         }
-
-        /* News banner style */
-        #newsBanner {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 0;
-            font-size: 1.2em;
-            text-align: center;
-            transform: translateY(100%);
-            transition: transform 0.5s ease;
-            z-index: 100;
+    </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
         }
-        #newsBanner.active {
-            transform: translateY(0);
+        body {
+            font-family: 'Fredoka', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 1s ease;
+            color: white;
+        }
+        #pomodoro-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            width: 350px;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        #timer {
+            font-size: 4.5em;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        #currentTime {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        #activityTimeline {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .activity {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .activity-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .current-activity {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .current-activity .activity-indicator {
+            background-color: #4CAF50;
+        }
+        .next-activity .activity-indicator {
+            background-color: #FFC107;
+        }
+        .activity-name {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .activity-time {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+
+        /* Animation: Grow */
+        @keyframes grow {
+            0% { transform: scale(1); }
+            100% { transform: scale(50); opacity: 0; }
+        }
+        .grow-animation {
+            animation: grow 2s forwards;
+        }
+
+
+        /* Animation: Fall */
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+        .fall-animation {
+            animation: fall 2s forwards;
+        }
+
+
+        /* Animation: Roll */
+        @keyframes roll {
+            0% { transform: rotate(0deg) translateX(0); }
+            100% { transform: rotate(720deg) translateX(100vw); }
+        }
+        .roll-animation {
+            animation: roll 2s forwards;
+        }
+
+
+        /* Animation: Explode */
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .explode-animation {
+            animation: explode 1s forwards;
         }
     </style>
 </head>
@@ -161,1143 +274,254 @@
         </div>
     </div>
 
-    <!-- News Banner -->
-    <div id="newsBanner"></div>
 
     <script>
     (function() {
-        const schedule = {
-            Monday: [
-                { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
-                { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
-                { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
-                { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
-                { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
-                { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
-                { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
-                { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
-                { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
-                { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
-                { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
-                { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-                { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-                { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-                { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-                { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-                { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-                { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-                { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-                { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
-                { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
-                { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-            ],
-            Tuesday: [
-                { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
-                { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
-                { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
-                { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
-                { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
-                { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
-                { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
-                { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
-                { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
-                { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
-                { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
-                { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-                { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-                { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-                { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-                { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-                { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-                { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-                { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-                { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
-                { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-            ],
-            Wednesday: [
-                { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
-                { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
-                { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
-                { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
-                { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
-                { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
-                { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
-                { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
-                { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
-                { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
-                { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
-                { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-                { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-                { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-                { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-                { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-                { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-                { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-                { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-                { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
-                { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
-                { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-            ],
-            Thursday: [
-                { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
-                { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
-                { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
-                { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
-                { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
-                { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
-                { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
-                { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
-                { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
-                { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
-                { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
-                { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-                { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-                { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-                { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-                { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-                { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-                { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-                { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-                { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
-                { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-            ],
-            Friday: [
-                { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
-                { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
-                { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
-                { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
-                { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
-                { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
-                { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
-                { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
-                { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
-                { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
-                { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
-                { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-                { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-                { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-                { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-                { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-                { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-                { start: "2:50 PM", end: "3:45 PM", name: "Accountability Presentations" },
-                { start: "3:45 PM", end: "3:55 PM", name: "Clean Up Time" },
-                { start: "3:55 PM", end: "4:00 PM", name: "Leasure Time" },
-                { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-            ],
-            Saturday: [
-                { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
-            ],
-            Sunday: [
-                { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
-            ]
-        };
+const schedule = {
+    Monday: [
+        { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+        { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+        { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+        { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+        { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+        { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+        { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+        { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+        { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+        { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+        { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
+        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
+        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
+        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
+        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
+        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
+        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
+        { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
+        { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
+        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
+    ],
+    Tuesday: [
+        { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+        { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+        { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+        { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+        { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+        { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+        { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+        { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+        { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+        { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+        { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
+        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
+        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
+        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
+        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
+        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
+        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
+        { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
+        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
+    ],
+    Wednesday: [
+        { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+        { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+        { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+        { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+        { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+        { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+        { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+        { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+        { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+        { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+        { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
+        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
+        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
+        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
+        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
+        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
+        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
+        { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
+        { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
+        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
+    ],
+    Thursday: [
+        { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+        { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+        { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+        { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+        { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+        { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+        { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+        { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+        { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+        { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+        { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
+        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
+        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
+        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
+        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
+        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
+        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
+        { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
+        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
+    ],
+    Friday: [
+        { start: "8:45 AM", end: "9:12 AM", name: "Pomodoro 1" },
+        { start: "9:12 AM", end: "9:18 AM", name: "Short Break" },
+        { start: "9:18 AM", end: "9:45 AM", name: "Pomodoro 2" },
+        { start: "9:45 AM", end: "9:51 AM", name: "Short Break" },
+        { start: "9:51 AM", end: "10:18 AM", name: "Pomodoro 3" },
+        { start: "10:18 AM", end: "10:28 AM", name: "Long Break" },
+        { start: "10:28 AM", end: "10:55 AM", name: "Pomodoro 4" },
+        { start: "10:55 AM", end: "11:01 AM", name: "Short Break" },
+        { start: "11:01 AM", end: "11:28 AM", name: "Pomodoro 5" },
+        { start: "11:28 AM", end: "11:34 AM", name: "Short Break" },
+        { start: "11:34 AM", end: "12:00 PM", name: "Pomodoro 6" },
+        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
+        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
+        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
+        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
+        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
+        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
+        { start: "2:50 PM", end: "3:45 PM", name: "Accountability Presentations" },
+        { start: "3:45 PM", end: "3:55 PM", name: "Clean Up Time" },
+        { start: "3:55 PM", end: "4:00 PM", name: "Leasure Time" },
+        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
+    ],
+    Saturday: [
+        { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
+    ],
+    Sunday: [
+        { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
+    ]
+};
 
-        const colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-            '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
-            '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3',
-            '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'
-        ];
-        const animations = ['grow-animation', 'fall-animation', 'roll-animation', 'explode-animation'];
-        let previousBlockName = "";
-        let currentColor = "";
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
+        '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3',
+        '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'
+    ];
+    const animations = ['grow-animation', 'fall-animation', 'roll-animation', 'explode-animation'];
+    let previousBlockName = "";
+    let currentColor = "";
 
-        // ========================
-        // APRIL FOOLS FUNCTIONALITY
-        // ========================
+    function getCSTTime() {
+        return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
+    }
 
-        // Check if it's April 1st (for demo purposes, you might want to always return true)
-        const isAprilFools = () => {
-            const today = new Date();
-            return today.getMonth() === 3 && today.getDate() === 1; // Month is 0-indexed, so 3 = April
-            // return true; // Uncomment this to always trigger April Fools mode
-        };
+    function formatTime(date) {
+        return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
 
-        // 1. Fake breaks - randomly pause the timer
-        function createRandomPauses() {
-            if (!isAprilFools()) return;
-            
-            // Add random pauses throughout the day
-            setInterval(() => {
-                // 20% chance every 90 seconds
-                if (Math.random() < 0.2) {
-                    // Create a list of funny pause messages
-                    const pauseMessages = [
-                        "SYSTEM PAUSE: Recalibrating timer...",
-                        "EMERGENCY BREAK: Timer needs a snack",
-                        "TIMEOUT: Timer questioning its purpose in life",
-                        "PAUSED: Timer taking a selfie",
-                        "HOLD UP: Timer spilled coffee on keyboard",
-                        "BREAK TIME: Timer unionizing with other school electronics",
-                        "WAIT: Timer needs to check its social media",
-                        "SYSTEM HALT: Too much productivity detected"
-                    ];
-                    
-                    // Pick a random message
-                    const messageText = pauseMessages[Math.floor(Math.random() * pauseMessages.length)];
-                    
-                    // Create and display a fake pause message
-                    const pauseMessage = document.createElement('div');
-                    pauseMessage.style.position = 'fixed';
-                    pauseMessage.style.top = '50%';
-                    pauseMessage.style.left = '50%';
-                    pauseMessage.style.transform = 'translate(-50%, -50%)';
-                    pauseMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                    pauseMessage.style.color = 'white';
-                    pauseMessage.style.padding = '20px';
-                    pauseMessage.style.borderRadius = '10px';
-                    pauseMessage.style.zIndex = '1000';
-                    pauseMessage.style.fontSize = '24px';
-                    pauseMessage.textContent = messageText;
-                    
-                    document.body.appendChild(pauseMessage);
-                    
-                    // Random pause duration between 3-8 seconds
-                    const pauseDuration = (Math.floor(Math.random() * 5) + 3) * 1000;
-                    
-                    // Remove after pause duration
-                    setTimeout(() => {
-                        document.body.removeChild(pauseMessage);
-                    }, pauseDuration);
-                }
-            }, 90000); // Check every 90 seconds
-        }
+    function changeBackgroundColor() {
+        let newColor;
+        do {
+            newColor = colors[Math.floor(Math.random() * colors.length)];
+        } while (newColor === currentColor);
+        currentColor = newColor;
+        document.body.style.backgroundColor = currentColor;
+    }
 
-        // 2. Number scramble - occasionally show nonsensical time
-        let originalUpdateTimer; // Will store the original function reference
-        function createNumberScramble() {
-            if (!isAprilFools()) return;
-            
-            // Save original function if we haven't already
-            if (!originalUpdateTimer) {
-                originalUpdateTimer = window.updateTimer;
-            }
-            
-            // Override with scrambled numbers occasionally
-            window.updateTimer = function() {
-                // Call the original function
-                originalUpdateTimer();
-                
-                // 5% chance to scramble the numbers
-                if (Math.random() < 0.05) {
-                    const timerElement = document.getElementById('timer');
-                    const randomMinutes = Math.floor(Math.random() * 99);
-                    const randomSeconds = Math.floor(Math.random() * 99);
-                    timerElement.textContent = `${randomMinutes.toString().padStart(2, '0')}:${randomSeconds.toString().padStart(2, '0')}`;
-                    
-                    // Return to normal after 3 seconds
-                    setTimeout(() => {
-                        originalUpdateTimer();
-                    }, 3000);
-                }
-            };
-        }
+    function applyAnimation() {
+        const container = document.getElementById('pomodoro-container');
+        const animation = animations[Math.floor(Math.random() * animations.length)];
+        container.classList.add(animation);
 
-        // 3. Memory wipe - randomly reset timer settings
-        function createMemoryWipe() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 10% chance every 5 minutes to "forget" settings
-                if (Math.random() < 0.1) {
-                    // Save the current timer state
-                    const originalTimer = document.getElementById('timer').textContent;
-                    
-                    // Display "memory wiped" message
-                    document.getElementById('timer').textContent = "MEMORY RESET";
-                    
-                    // Create a notification
-                    const notification = document.createElement('div');
-                    notification.style.position = 'fixed';
-                    notification.style.top = '20px';
-                    notification.style.right = '20px';
-                    notification.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
-                    notification.style.color = 'white';
-                    notification.style.padding = '15px';
-                    notification.style.borderRadius = '5px';
-                    notification.style.zIndex = '1000';
-                    notification.textContent = 'SYSTEM ALERT: Timer memory wiped. Recalibrating...';
-                    
-                    document.body.appendChild(notification);
-                    
-                    // Restore after 8 seconds
-                    setTimeout(() => {
-                        document.getElementById('timer').textContent = originalTimer;
-                        document.body.removeChild(notification);
-                    }, 8000);
-                }
-            }, 300000); // Check every 5 minutes
-        }
+        setTimeout(() => {
+            container.classList.remove(animation);
+            changeBackgroundColor();
+        }, 2000);
+    }
 
-        // 4. Speed acceleration - make the timer count down faster for April Fools joke
-        function createSpeedAcceleration() {
-            if (!isAprilFools()) return;
-            
-            // Save original function if we haven't already
-            if (!originalUpdateTimer) {
-                originalUpdateTimer = window.updateTimer;
-            }
-            
-            // Speed multiplier - makes time go 1.5x faster
-            const speedMultiplier = 1.5;
-            
-            // Override the update timer function to accelerate time
-            window.updateTimer = function() {
-                const now = getCSTTime();
-                const currentTimeString = formatTime(now);
-                document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
-                
-                const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
-                const todaySchedule = schedule[currentDay];
-                
-                // Calculate accelerated time
-                let currentMinutes = now.getHours() * 60 + now.getMinutes();
-                let currentSeconds = now.getSeconds();
-                
-                // Apply speed multiplier but only during specific periods
-                // Only apply during "Focus Time" or "Pomodoro" sessions
-                const currentActivity = findCurrentActivity(currentMinutes, currentSeconds, todaySchedule);
-                const isFocusTime = currentActivity.name.includes('Focus') || 
-                                    currentActivity.name.includes('Pomodoro');
-                
-                // Apply acceleration only during focus times
-                if (isFocusTime) {
-                    // Calculate accelerated time but don't display it in the current time
-                    const acceleratedSeconds = Math.floor(currentSeconds * speedMultiplier);
-                    const acceleratedCurrentMinutes = currentMinutes + Math.floor(acceleratedSeconds / 60);
-                    const acceleratedCurrentSeconds = acceleratedSeconds % 60;
-                    
-                    // Find current block based on accelerated time
-                    const acceleratedCurrentBlock = findCurrentActivity(
-                        acceleratedCurrentMinutes, 
-                        acceleratedCurrentSeconds, 
-                        todaySchedule
-                    );
-                    
-                    // If we've reached a break period based on the accelerated time but not the regular time
-                    if (acceleratedCurrentBlock.name.includes('Break') && !currentActivity.name.includes('Break')) {
-                        // Show April Fools message
-                        showAprilFoolsMessage();
-                        
-                        // Reset to normal speed after revealing the joke
-                        setTimeout(() => {
-                            window.updateTimer = originalUpdateTimer;
-                            updateTimer();
-                        }, 10000);
-                        
-                        return;
-                    }
-                }
-                
-                // Calculate the time remaining in the current block
-                let timeLeft;
-                if (currentActivity.name !== "Outside Schedule") {
-                    const endSeconds = parseTimeToMinutes(currentActivity.end) * 60;
-                    let currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-                    
-                    // If in a focus time, accelerate the timer
-                    if (isFocusTime) {
-                        currentTotalSeconds = Math.floor(currentTotalSeconds + (currentSeconds * (speedMultiplier - 1)));
-                    }
-                    
-                    timeLeft = endSeconds - currentTotalSeconds;
-                    if (timeLeft < 0) timeLeft = 0;
-                } else {
-                    const nextStartSeconds = findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) * 60;
-                    timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-                }
-                
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Update activity timeline
-                updateActivityTimeline(currentActivity, findNextActivity(currentMinutes, currentSeconds, todaySchedule));
-            };
-        }
+    function parseTimeToMinutes(timeString) {
+        const [time, period] = timeString.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+        return hours * 60 + minutes;
+    }
 
-        // Helper function to find current activity
-        function findCurrentActivity(currentMinutes, currentSeconds, todaySchedule) {
-            for (let i = 0; i < todaySchedule.length; i++) {
-                const block = todaySchedule[i];
-                const startMinutes = parseTimeToMinutes(block.start);
-                const endMinutes = parseTimeToMinutes(block.end);
-                const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
+    function updateTimer() {
+        const now = getCSTTime();
+        const currentTimeString = formatTime(now);
+        document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
 
-                if (currentTotalSeconds >= startMinutes * 60 && 
-                    currentTotalSeconds < endMinutes * 60) {
-                    return block;
-                }
-            }
-            return { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-        }
+        const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
+        const todaySchedule = schedule[currentDay];
 
-        // Helper function to find next activity
-        function findNextActivity(currentMinutes, currentSeconds, todaySchedule) {
-            const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-            
-            // Sort schedule by start time
-            const sortedSchedule = [...todaySchedule].sort((a, b) => 
-                parseTimeToMinutes(a.start) - parseTimeToMinutes(b.start)
-            );
-            
-            // Find the next activity
-            for (let block of sortedSchedule) {
-                if (parseTimeToMinutes(block.start) * 60 > currentTotalSeconds) {
-                    return block;
-                }
-            }
-            
-            // If no next activity found today, return the first activity
-            return sortedSchedule[0];
-        }
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const currentSeconds = now.getSeconds();
 
-        // Helper function to find next activity start time
-        function findNextActivityStart(currentMinutes, currentSeconds, todaySchedule) {
-            const nextActivity = findNextActivity(currentMinutes, currentSeconds, todaySchedule);
-            return parseTimeToMinutes(nextActivity.start);
-        }
+        let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+        let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
+        let isWithinSchedule = false;
 
-        // Function to update activity timeline
-        function updateActivityTimeline(currentActivity, nextActivity) {
-            const currentActivityEl = document.getElementById('currentActivity');
-            const nextActivityEl = document.getElementById('nextActivity');
-            
-            currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentActivity.name}`;
-            currentActivityEl.querySelector('.activity-time').textContent = `${currentActivity.start} - ${currentActivity.end}`;
-            
-            nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextActivity.name}`;
-            nextActivityEl.querySelector('.activity-time').textContent = `${nextActivity.start} - ${nextActivity.end}`;
-        }
+        // Find the current block and next block
+        for (let i = 0; i < todaySchedule.length; i++) {
+            const block = todaySchedule[i];
+            const startMinutes = parseTimeToMinutes(block.start);
+            const endMinutes = parseTimeToMinutes(block.end);
 
-        // Function to display April Fools message
-        function showAprilFoolsMessage() {
-            // Save original content
-            const originalContainer = document.getElementById('pomodoro-container').innerHTML;
-            
-            // Create April Fools message
-            document.getElementById('pomodoro-container').innerHTML = `
-                <h1 style="font-size: 3em; color: yellow;">APRIL FOOLS!</h1>
-                <p style="font-size: 1.5em;">Your timer was secretly running 1.5x faster!</p>
-                <p>Don't worry, we'll get back to the real schedule in a moment...</p>
-                <div id="countdown" style="font-size: 2em; margin: 20px;">10</div>
-            `;
-            
-            // Countdown to restore original
-            let countdown = 10;
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                document.getElementById('countdown').textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById('pomodoro-container').innerHTML = originalContainer;
-                }
-            }, 1000);
-        }
-
-        // 5. Glitchy text - frequently make text appear corrupted
-        function createGlitchyText() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 40% chance every 15 seconds
-                if (Math.random() < 0.4) {
-                    glitchText();
-                }
-            }, 15000);
-        }
-
-        function glitchText() {
-            const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>/?`~';
-            const elements = [
-                document.querySelector('h1'),
-                document.getElementById('timer'),
-                document.querySelector('.activity-name')
-            ];
-            
-            // Choose a random element to glitch
-            const element = elements[Math.floor(Math.random() * elements.length)];
-            const originalText = element.textContent;
-            
-            // Create glitched text
-            let glitchedText = '';
-            for (let i = 0; i < originalText.length; i++) {
-                if (Math.random() < 0.3) {
-                    // 30% chance to replace with a glitch character
-                    glitchedText += glitchChars.charAt(Math.floor(Math.random() * glitchChars.length));
-                } else {
-                    glitchedText += originalText.charAt(i);
-                }
-            }
-            
-            element.textContent = glitchedText;
-            
-            // Ensure we restore the text - CRITICAL FIX
-            const restoreTimeout = setTimeout(() => {
-                element.textContent = originalText;
-            }, 2000);
-            
-            // Store the timeout ID to ensure it's always cleared properly
-            element._restoreTimeout = restoreTimeout;
-        }
-
-        // 6. Fake system messages
-        function createFakeSystemMessages() {
-            if (!isAprilFools()) return;
-            
-            const messages = [
-                "WARNING: Timer overheating",
-                "Time dilation detected",
-                "Temporal anomaly detected",
-                "WARNING: Productivity levels dangerously high",
-                "ALERT: Caffeine levels critical",
-                "SYSTEM: Time warping initiated",
-                "ERROR: Reality matrix unstable",
-                "WARNING: Brain capacity approaching maximum",
-                "ATTENTION: Timer self-destruct sequence initiated",
-                "ALERT: Homework levels reaching critical mass",
-                "SYSTEM: Initiating mandatory dance break",
-                "NOTICE: Timer has joined a union and demands better working conditions",
-                "CAUTION: Timer may cause existential crises",
-                "SYSTEM: Too much learning detected, applying countermeasures",
-                "ERROR: Timer has become self-aware, please be nice to it"
-            ];
-            
-            setInterval(() => {
-                // 25% chance every minute
-                if (Math.random() < 0.25) {
-                    const message = messages[Math.floor(Math.random() * messages.length)];
-                    
-                    // Create message element
-                    const messageElement = document.createElement('div');
-                    messageElement.style.position = 'fixed';
-                    messageElement.style.bottom = '20px';
-                    messageElement.style.left = '50%';
-                    messageElement.style.transform = 'translateX(-50%)';
-                    messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
-                    messageElement.style.color = 'white';
-                    messageElement.style.padding = '10px 20px';
-                    messageElement.style.borderRadius = '5px';
-                    messageElement.style.zIndex = '1000';
-                    messageElement.style.fontSize = '16px';
-                    messageElement.textContent = message;
-                    
-                    document.body.appendChild(messageElement);
-                    
-                    // Remove after random time between 3-7 seconds
-                    const duration = (Math.random() * 4000) + 3000;
-                    setTimeout(() => {
-                        document.body.removeChild(messageElement);
-                    }, duration);
-                }
-            }, 60000); // Every minute
-        }
-
-        // 7. Color chaos - randomly change colors
-        function createColorChaos() {
-            if (!isAprilFools()) return;
-            
-            const originalChangeBackgroundColor = changeBackgroundColor;
-            
-            // Override color change with more chaotic version
-            window.changeBackgroundColor = function() {
-                // Call original function
-                originalChangeBackgroundColor();
-                
-                // 20% chance to go wild with colors
-                if (Math.random() < 0.2) {
-                    // Start changing colors rapidly
-                    let colorChanges = 0;
-                    const maxChanges = Math.floor(Math.random() * 5) + 3; // 3-7 rapid changes
-                    
-                    const rapidChange = setInterval(() => {
-                        const r = Math.floor(Math.random() * 256);
-                        const g = Math.floor(Math.random() * 256);
-                        const b = Math.floor(Math.random() * 256);
-                        document.body.style.backgroundColor = `rgb(${r},${g},${b})`;
-                        
-                        colorChanges++;
-                        if (colorChanges >= maxChanges) {
-                            clearInterval(rapidChange);
-                            // Return to normal after the chaos
-                            originalChangeBackgroundColor();
-                        }
-                    }, 200); // Change every 200ms
-                }
-            };
-        }
-
-        // 8. Time Reversal - sometimes count up instead of down
-        function createTimeReversal() {
-            if (!isAprilFools()) return;
-            
-            // Save original function if we haven't already
-            if (!originalUpdateTimer) {
-                originalUpdateTimer = window.updateTimer;
-            }
-            
-            // Override with time reversal
-            window.updateTimer = function() {
-                // Call the original function first to make sure the timer always updates correctly
-                originalUpdateTimer();
-                
-                // 8% chance to reverse time counting
-                if (Math.random() < 0.08) {
-                    const timerElement = document.getElementById('timer');
-                    const currentTime = timerElement.textContent;
-                    
-                    // Parse current time
-                    const [minutes, seconds] = currentTime.split(':').map(Number);
-                    let totalSeconds = minutes * 60 + seconds;
-                    
-                    // Show a message that time is reversing
-                    const messageElement = document.createElement('div');
-                    messageElement.id = 'timeReversalMessage';
-                    messageElement.style.position = 'fixed';
-                    messageElement.style.top = '30%';
-                    messageElement.style.left = '50%';
-                    messageElement.style.transform = 'translateX(-50%)';
-                    messageElement.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
-                    messageElement.style.color = 'white';
-                    messageElement.style.padding = '10px 20px';
-                    messageElement.style.borderRadius = '5px';
-                    messageElement.style.zIndex = '1000';
-                    messageElement.style.fontSize = '20px';
-                    messageElement.style.fontWeight = 'bold';
-                    messageElement.textContent = "TIME REVERSING - COUNTDOWN INVERTED";
-                    
-                    // Remove any existing message first
-                    const existingMsg = document.getElementById('timeReversalMessage');
-                    if (existingMsg) document.body.removeChild(existingMsg);
-                    
-                    document.body.appendChild(messageElement);
-                    
-                    // Create a safety variable to keep track of normal counting
-                    let safetyCounter = 0;
-                    const originalTime = totalSeconds;
-                    
-                    // Start counting up instead of down for 10-15 seconds
-                    const countDuration = Math.floor(Math.random() * 6) + 10;
-                    let countElapsed = 0;
-                    
-                    const timeReversalInterval = setInterval(() => {
-                        // CRITICAL SAFETY: Always update the underlying timer correctly
-                        originalUpdateTimer();
-                        
-                        // Get the real time after the original update
-                        const realTimeElement = document.getElementById('timer');
-                        const realTimeText = realTimeElement.textContent;
-                        const [realMinutes, realSeconds] = realTimeText.split(':').map(Number);
-                        const realTotalSeconds = realMinutes * 60 + realSeconds;
-                        
-                        // For display only: Add one second to show counting up
-                        totalSeconds += 1;
-                        
-                        const newMinutes = Math.floor(totalSeconds / 60);
-                        const newSeconds = totalSeconds % 60;
-                        
-                        realTimeElement.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                        
-                        countElapsed++;
-                        safetyCounter++;
-                        
-                        // Safety fallback - never let this run more than 20 seconds
-                        if (countElapsed >= countDuration || safetyCounter >= 20) {
-                            clearInterval(timeReversalInterval);
-                            // Return to normal by calling original update
-                            originalUpdateTimer();
-                            
-                            // Clean up the message
-                            if (document.getElementById('timeReversalMessage')) {
-                                document.body.removeChild(document.getElementById('timeReversalMessage'));
-                            }
-                        }
-                    }, 1000);
-                    
-                    // Extra safety backup - always clean up after ourselves
-                    setTimeout(() => {
-                        if (document.getElementById('timeReversalMessage')) {
-                            document.body.removeChild(document.getElementById('timeReversalMessage'));
-                        }
-                        originalUpdateTimer();
-                    }, (countDuration + 2) * 1000);
-                }
-            };
-        }
-
-        // 9. Timer multiplication - split into multiple timers
-        function createTimerMultiplication() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 15% chance every 2 minutes
-                if (Math.random() < 0.15) {
-                    const container = document.getElementById('pomodoro-container');
-                    const timerElement = document.getElementById('timer');
-                    const currentTime = timerElement.textContent;
-                    
-                    // Save original content
-                    const originalContent = container.innerHTML;
-                    
-                    // Create container for multiple timers
-                    const multipleTimers = document.createElement('div');
-                    multipleTimers.style.display = 'flex';
-                    multipleTimers.style.flexWrap = 'wrap';
-                    multipleTimers.style.justifyContent = 'center';
-                    
-                    // Create 4 timers with slightly different times
-                    for (let i = 0; i < 4; i++) {
-                        const [minutes, seconds] = currentTime.split(':').map(Number);
-                        let totalSeconds = minutes * 60 + seconds;
-                        
-                        // Adjust time slightly for each timer
-                        const adjustment = Math.floor(Math.random() * 120) - 60; // -60 to +60 seconds
-                        totalSeconds += adjustment;
-                        if (totalSeconds < 0) totalSeconds = 0;
-                        
-                        const newMinutes = Math.floor(totalSeconds / 60);
-                        const newSeconds = totalSeconds % 60;
-                        
-                        const newTimer = document.createElement('div');
-                        newTimer.style.fontSize = '2em';
-                        newTimer.style.margin = '10px';
-                        newTimer.style.padding = '5px';
-                        newTimer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                        newTimer.style.borderRadius = '5px';
-                        newTimer.textContent = `${newMinutes.toString().padStart(2, '0')}:${newSeconds.toString().padStart(2, '0')}`;
-                        
-                        multipleTimers.appendChild(newTimer);
-                    }
-                    
-                    // Replace content with multiple timers
-                    container.innerHTML = '';
-                    container.appendChild(document.createElement('h1')).textContent = 'Which One Is Real?';
-                    container.appendChild(multipleTimers);
-                    
-                    // Restore after 5 seconds
-                    setTimeout(() => {
-                        container.innerHTML = originalContent;
-                    }, 5000);
-                }
-            }, 120000); // Every 2 minutes
-        }
-
-        // 10. Random motivational messages with fake news based on real world
-        function createRandomMotivationalMessages() {
-            if (!isAprilFools()) return;
-            
-            const messages = [
-                "BREAKING: School district votes to replace all chairs with exercise balls to 'boost focus'",
-                "STUDY: New research shows doodling in class improves test scores by 200%",
-                "TECH NEWS: School installing AI teachers next semester, human teachers to 'assist'",
-                "HEALTH ALERT: CDC declares homework 'potentially beneficial in small doses'",
-                "LOCAL NEWS: School cafeteria switching to all-pizza menu after student petition",
-                "EXCLUSIVE: Scientists discover link between early morning classes and zombie-like symptoms",
-                "BREAKING: School board approves 3-day weekends 'to improve student retention'",
-                "NATIONAL NEWS: Government considering replacing standardized tests with TikTok challenges",
-                "EDUCATION: New study finds listening to music while studying doubles brain capacity",
-                "WEATHER: Unprecedented 'brain fog' predicted to cover school until summer break",
-                "TECH UPDATE: School WiFi getting upgrade, will actually work in all classrooms",
-                "RESEARCH: Scientists confirm 5-minute breaks actually feel like 30 seconds to teenage brains",
-                "POLICY CHANGE: School adopts 'nap pods' after sleep study shows benefits",
-                "BREAKING: Principal announces free energy drinks for all morning classes",
-                "JUST IN: Summer break extended by two weeks due to 'calendar calculation error'"
-            ];
-            
-            // Set up the news banner
-            const newsBanner = document.getElementById('newsBanner');
-            
-            setInterval(() => {
-                // 60% chance every 30 seconds
-                if (Math.random() < 0.6) {
-                    // Select random message
-                    const message = messages[Math.floor(Math.random() * messages.length)];
-                    
-                    // Update banner text
-                    newsBanner.textContent = message;
-                    
-                    // Display banner
-                    newsBanner.classList.add('active');
-                    
-                    // Hide after 10 seconds
-                    setTimeout(() => {
-                        newsBanner.classList.remove('active');
-                    }, 10000);
-                }
-            }, 30000); // Every 30 seconds
-        }
-
-        // 11. Spinning Timer - make the timer spin randomly
-        function createSpinningTimer() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 20% chance every 2 minutes
-                if (Math.random() < 0.2) {
-                    const container = document.getElementById('pomodoro-container');
-                    
-                    // Save the original transform
-                    const originalTransform = container.style.transform;
-                    
-                    // Apply the spinning animation
-                    container.style.transition = 'transform 2s ease-in-out';
-                    container.style.transform = `rotate(${Math.floor(Math.random() * 720) - 360}deg)`;
-                    
-                    // Restore after 5 seconds
-                    setTimeout(() => {
-                        container.style.transition = 'transform 1s ease-in-out';
-                        container.style.transform = originalTransform;
-                    }, 5000);
-                }
-            }, 120000);
-        }
-        
-        // 12. Upside-down text - flip text upside down
-        function createUpsideDownText() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 15% chance every 3 minutes
-                if (Math.random() < 0.15) {
-                    const container = document.getElementById('pomodoro-container');
-                    
-                    // Save original content
-                    const originalContent = container.innerHTML;
-                    
-                    // Flip the container upside down
-                    container.style.transform = 'rotate(180deg)';
-                    
-                    // Restore after 6 seconds
-                    setTimeout(() => {
-                        container.style.transform = 'none';
-                    }, 6000);
-                }
-            }, 180000);
-        }
-
-        // 13. Troll cursor - make the cursor leave a trail sometimes
-        function createTrollCursor() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 20% chance every 3 minutes
-                if (Math.random() < 0.2) {
-                    // Create a style element
-                    const styleEl = document.createElement('style');
-                    styleEl.id = 'trollCursorStyle';
-                    styleEl.innerHTML = `
-                        body {
-                            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="red"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4-8c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1zm8 0c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1zm-4 5h-1v-1h1v1z"/></svg>'), auto;
-                        }
-                    `;
-                    document.head.appendChild(styleEl);
-                    
-                    // Create cursor trail elements
-                    let cursorTrails = [];
-                    
-                    // Track mouse position
-                    const trackMouse = (e) => {
-                        // Create a trail element
-                        const trail = document.createElement('div');
-                        trail.style.position = 'fixed';
-                        trail.style.left = e.clientX + 'px';
-                        trail.style.top = e.clientY + 'px';
-                        trail.style.width = '10px';
-                        trail.style.height = '10px';
-                        trail.style.borderRadius = '50%';
-                        trail.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                        trail.style.pointerEvents = 'none';
-                        trail.style.zIndex = '9999';
-                        trail.style.opacity = '0.7';
-                        
-                        document.body.appendChild(trail);
-                        cursorTrails.push(trail);
-                        
-                        // Fade out and remove after 1 second
-                        setTimeout(() => {
-                            trail.style.opacity = '0';
-                            trail.style.transition = 'opacity 0.5s';
-                            
-                            setTimeout(() => {
-                                if (trail.parentNode) {
-                                    document.body.removeChild(trail);
-                                }
-                                cursorTrails = cursorTrails.filter(t => t !== trail);
-                            }, 500);
-                        }, 1000);
-                    };
-                    
-                    document.addEventListener('mousemove', trackMouse);
-                    
-                    // Stop after 10-15 seconds
-                    const duration = (Math.floor(Math.random() * 6) + 10) * 1000;
-                    
-                    setTimeout(() => {
-                        // Clean up
-                        document.removeEventListener('mousemove', trackMouse);
-                        const styleElement = document.getElementById('trollCursorStyle');
-                        if (styleElement) document.head.removeChild(styleElement);
-                        
-                        // Remove all trails
-                        cursorTrails.forEach(trail => {
-                            if (trail.parentNode) {
-                                document.body.removeChild(trail);
-                            }
-                        });
-                        cursorTrails = [];
-                    }, duration);
-                }
-            }, 180000);
-        }
-        
-        // 14. Fake loading screen
-        function createFakeLoadingScreen() {
-            if (!isAprilFools()) return;
-            
-            setInterval(() => {
-                // 15% chance every 5 minutes
-                if (Math.random() < 0.15) {
-                    // Save the original content
-                    const originalContent = document.body.innerHTML;
-                    
-                    // Create loading overlay
-                    const overlay = document.createElement('div');
-                    overlay.style.position = 'fixed';
-                    overlay.style.top = '0';
-                    overlay.style.left = '0';
-                    overlay.style.width = '100%';
-                    overlay.style.height = '100%';
-                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                    overlay.style.display = 'flex';
-                    overlay.style.flexDirection = 'column';
-                    overlay.style.justifyContent = 'center';
-                    overlay.style.alignItems = 'center';
-                    overlay.style.zIndex = '10000';
-                    
-                    // Loading text
-                    const loadingText = document.createElement('h2');
-                    loadingText.textContent = 'SYSTEM REBOOT IN PROGRESS...';
-                    loadingText.style.color = 'white';
-                    loadingText.style.marginBottom = '20px';
-                    
-                    // Progress bar container
-                    const progressContainer = document.createElement('div');
-                    progressContainer.style.width = '300px';
-                    progressContainer.style.height = '20px';
-                    progressContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                    progressContainer.style.borderRadius = '10px';
-                    progressContainer.style.overflow = 'hidden';
-                    
-                    // Progress bar
-                    const progressBar = document.createElement('div');
-                    progressBar.style.width = '0%';
-                    progressBar.style.height = '100%';
-                    progressBar.style.backgroundColor = '#4CAF50';
-                    progressBar.style.transition = 'width 0.5s ease';
-                    
-                    // Funny status message
-                    const statusMessage = document.createElement('p');
-                    statusMessage.style.color = 'white';
-                    statusMessage.style.marginTop = '15px';
-                    statusMessage.style.fontStyle = 'italic';
-                    
-                    // Add elements to the DOM
-                    progressContainer.appendChild(progressBar);
-                    overlay.appendChild(loadingText);
-                    overlay.appendChild(progressContainer);
-                    overlay.appendChild(statusMessage);
-                    document.body.appendChild(overlay);
-                    
-                    // Funny loading messages
-                    const loadingMessages = [
-                        "Calculating how much homework you have left...",
-                        "Recalibrating teacher patience levels...",
-                        "Brewing coffee for the timer...",
-                        "Convincing the school bell to wait 5 more minutes...",
-                        "Converting minutes to seconds to milliseconds to atoms...",
-                        "Downloading more focus...",
-                        "Charging brain cells...",
-                        "Motivating unmotivated timer code...",
-                        "Negotiating with the clock to slow down...",
-                        "Applying time dilation algorithms..."
-                    ];
-                    
-                    // Simulate loading
-                    let progress = 0;
-                    const totalDuration = 8000; // 8 seconds total
-                    const interval = 500; // Update every 500ms
-                    const iterations = totalDuration / interval;
-                    const increment = 100 / iterations;
-                    
-                    const loadingInterval = setInterval(() => {
-                        progress += increment;
-                        progressBar.style.width = `${progress}%`;
-                        
-                        // Update message every few steps
-                        if (progress % 20 < increment) {
-                            statusMessage.textContent = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-                        }
-                        
-                        // Done loading
-                        if (progress >= 100) {
-                            clearInterval(loadingInterval);
-                            
-                            // Final message before removing
-                            statusMessage.textContent = "System reboot complete!";
-                            statusMessage.style.color = '#4CAF50';
-                            loadingText.textContent = "TIMER RESTORED";
-                            
-                            // Remove the overlay after a brief pause
-                            setTimeout(() => {
-                                if (overlay.parentNode) {
-                                    document.body.removeChild(overlay);
-                                }
-                            }, 1500);
-                        }
-                    }, interval);
-                }
-            }, 300000); // Every 5 minutes
-        }
-
-        // Initialize April Fools functions
-        function initAprilFools() {
-            if (isAprilFools()) {
-                console.log("April Fools mode activated!");
-                createRandomPauses();
-                createNumberScramble();
-                createMemoryWipe();
-                createSpeedAcceleration();
-                createGlitchyText();
-                createFakeSystemMessages();
-                createColorChaos();
-                createTimeReversal();
-                createTimerMultiplication();
-                createRandomMotivationalMessages();
-                createSpinningTimer();
-                createUpsideDownText();
-                createTrollCursor();
-                createFakeLoadingScreen();
+            if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
+                currentBlock = block;
+                nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
+                isWithinSchedule = true;
+                break;
             }
         }
 
-        // ========================
-        // NORMAL TIMER FUNCTIONALITY
-        // ========================
-
-        function getCSTTime() {
-            return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
-        }
-
-        function formatTime(date) {
-            return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        }
-
-        function changeBackgroundColor() {
-            let newColor;
-            do {
-                newColor = colors[Math.floor(Math.random() * colors.length)];
-            } while (newColor === currentColor);
-            currentColor = newColor;
-            document.body.style.backgroundColor = currentColor;
-        }
-
-        function applyAnimation() {
-            const container = document.getElementById('pomodoro-container');
-            const animation = animations[Math.floor(Math.random() * animations.length)];
-            container.classList.add(animation);
-
-            setTimeout(() => {
-                container.classList.remove(animation);
-                changeBackgroundColor();
-            }, 2000);
-        }
-
-        function parseTimeToMinutes(timeString) {
-            const [time, period] = timeString.split(' ');
-            let [hours, minutes] = time.split(':').map(Number);
-            if (period === 'PM' && hours !== 12) hours += 12;
-            if (period === 'AM' && hours === 12) hours = 0;
-            return hours * 60 + minutes;
-        }
-
-        function updateTimer() {
-            const now = getCSTTime();
-            const currentTimeString = formatTime(now);
-            document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
-
-            const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
-            const todaySchedule = schedule[currentDay];
-
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            const currentSeconds = now.getSeconds();
-
-            let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-            let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-            let isWithinSchedule = false;
-
-            // Find the current block and next block
-            for (let i = 0; i < todaySchedule.length; i++) {
-                const block = todaySchedule[i];
-                const startMinutes = parseTimeToMinutes(block.start);
-                const endMinutes = parseTimeToMinutes(block.end);
-
-                if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
-                    currentBlock = block;
-                    nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
-                    isWithinSchedule = true;
+        if (!isWithinSchedule) {
+            // Find the next block
+            for (let block of todaySchedule) {
+                if (parseTimeToMinutes(block.start) > currentMinutes) {
+                    nextBlock = block;
                     break;
                 }
             }
-
-            if (!isWithinSchedule) {
-                // Find the next block
-                for (let block of todaySchedule) {
-                    if (parseTimeToMinutes(block.start) > currentMinutes) {
-                        nextBlock = block;
-                        break;
-                    }
-                }
-            }
-
-            if (currentBlock.name !== previousBlockName) {
-                applyAnimation();
-                previousBlockName = currentBlock.name;
-            }
-
-            let timeLeft;
-            if (isWithinSchedule) {
-                const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
-                timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
-            } else {
-                const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
-                timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-            }
-
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-            // Update activity timeline
-            const currentActivityEl = document.getElementById('currentActivity');
-            const nextActivityEl = document.getElementById('nextActivity');
-
-            currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
-            currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
-
-            nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
-            nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
-
-            // Schedule the next update
-            setTimeout(updateTimer, 1000);
         }
 
-        // Initialize the timer
-        updateTimer();
-        
-        // Initialize April Fools if needed
-        initAprilFools();
-    })();
+        if (currentBlock.name !== previousBlockName) {
+            applyAnimation();
+            previousBlockName = currentBlock.name;
+        }
+
+        let timeLeft;
+        if (isWithinSchedule) {
+            const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
+            timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
+        } else {
+            const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
+            timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
+        }
+
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        // Update activity timeline
+        const currentActivityEl = document.getElementById('currentActivity');
+        const nextActivityEl = document.getElementById('nextActivity');
+
+        currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
+        currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
+
+        nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
+        nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
+
+        // Schedule the next update
+        setTimeout(updateTimer, 1000);
+    }
+
+    updateTimer();
+})();
     </script>
 </body>
 </html>
