@@ -1,507 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-        body {
-            font-family: 'Fredoka', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background-color 1s ease;
-            color: white;
-        }
-        #pomodoro-container {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            width: 350px;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        #timer {
-            font-size: 4.5em;
-            margin: 20px 0;
-            font-weight: 600;
-        }
-        #currentTime {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-        .label {
-            font-weight: 600;
-            margin-right: 5px;
-        }
-        #activityTimeline {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-        .activity {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        .activity-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .current-activity {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        .current-activity .activity-indicator {
-            background-color: #4CAF50;
-        }
-        .next-activity .activity-indicator {
-            background-color: #FFC107;
-        }
-        .activity-name {
-            flex-grow: 1;
-            text-align: left;
-        }
-        .activity-time {
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pomodoro Live Scheduler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* Base Variables */
+    :root {
+      --bg-start: #1b2a18;
+      --bg-end:   #22321f;
+      --text:     #dcedc2;
+      --muted:    #bbbbbb;
+      --transition: 0.3s ease;
+    }
 
+    /* Reset & Layout */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(120deg, var(--bg-start), var(--bg-end));
+      background-size: 200% 200%;
+      animation: gradientShift 240s var(--transition) infinite;
+      position: relative; transition: background var(--transition);
+    }
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% 0%; }
+      50%     { background-position: 100% 100%; }
+    }
 
-        /* Animation: Grow */
-        @keyframes grow {
-            0% { transform: scale(1); }
-            100% { transform: scale(50); opacity: 0; }
-        }
-        .grow-animation {
-            animation: grow 2s forwards;
-        }
+    /* Stripes Overlay */
+    body::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(45deg,
+        rgba(255,255,255,0.05) 0,
+        rgba(255,255,255,0.05) 3px,
+        transparent 3px,
+        transparent 15px
+      );
+      background-size: 20px 20px;
+      animation: stripesMove 14400s linear infinite;
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes stripesMove { to { background-position: -5000px 5000px; } }
 
+    /* Main Container */
+    #container {
+      position: relative; z-index: 1;
+      width: 380px; max-width: 90%;
+      background: rgba(0,0,0,0.35); border-radius: 16px;
+      padding: 2rem 1.5rem; text-align: center;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+      transition: color var(--transition);
+    }
+    h1 {
+      font-size: 2.4rem; margin-bottom: 0.5rem;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text);
+    }
+    #timer {
+      font-size: 4rem; font-weight: 600;
+      margin: 0.5rem 0 1rem; letter-spacing: -1px;
+      color: var(--text);
+    }
 
-        /* Animation: Fall */
-        @keyframes fall {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100vh); }
-        }
-        .fall-animation {
-            animation: fall 2s forwards;
-        }
+    /* Next Indicator */
+    #next-info {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .next-label {
+      font-size: 0.75rem; color: var(--muted);
+      margin-bottom: 0.25rem; letter-spacing: 1.5px;
+    }
+    .next-content {
+      display: flex; align-items: center;
+    }
+    .morph-dot {
+      width: 16px; height: 16px; margin-right: 8px;
+      background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
+      box-shadow: 0 0 8px var(--accent);
+      animation: morph var(--morph-duration,6s) ease-in-out infinite;
+      transform-origin: center; border-radius: 50%;
+    }
+    @keyframes morph {
+      0%,100% { transform: scale(1); }
+      25%     { transform: scale(1.1) rotate(20deg); }
+      50%     { transform: scale(0.9) rotate(-20deg); }
+      75%     { transform: scale(1.05) rotate(10deg); }
+    }
 
+    /* Progress Bar */
+    #progressBar {
+      width: 100%; height: 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px; overflow: hidden;
+      margin-top: 1rem;
+    }
+    #progress {
+      width: 0; height: 100%;
+      background: var(--accent);
+      transition: width 1s linear;
+    }
 
-        /* Animation: Roll */
-        @keyframes roll {
-            0% { transform: rotate(0deg) translateX(0); }
-            100% { transform: rotate(720deg) translateX(100vw); }
-        }
-        .roll-animation {
-            animation: roll 2s forwards;
-        }
-
-
-        /* Animation: Explode */
-        @keyframes explode {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        .explode-animation {
-            animation: explode 1s forwards;
-        }
-    </style>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-        body {
-            font-family: 'Fredoka', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background-color 1s ease;
-            color: white;
-        }
-        #pomodoro-container {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            width: 350px;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        #timer {
-            font-size: 4.5em;
-            margin: 20px 0;
-            font-weight: 600;
-        }
-        #currentTime {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-        .label {
-            font-weight: 600;
-            margin-right: 5px;
-        }
-        #activityTimeline {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-        .activity {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        .activity-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .current-activity {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        .current-activity .activity-indicator {
-            background-color: #4CAF50;
-        }
-        .next-activity .activity-indicator {
-            background-color: #FFC107;
-        }
-        .activity-name {
-            flex-grow: 1;
-            text-align: left;
-        }
-        .activity-time {
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-
-
-        /* Animation: Grow */
-        @keyframes grow {
-            0% { transform: scale(1); }
-            100% { transform: scale(50); opacity: 0; }
-        }
-        .grow-animation {
-            animation: grow 2s forwards;
-        }
-
-
-        /* Animation: Fall */
-        @keyframes fall {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100vh); }
-        }
-        .fall-animation {
-            animation: fall 2s forwards;
-        }
-
-
-        /* Animation: Roll */
-        @keyframes roll {
-            0% { transform: rotate(0deg) translateX(0); }
-            100% { transform: rotate(720deg) translateX(100vw); }
-        }
-        .roll-animation {
-            animation: roll 2s forwards;
-        }
-
-
-        /* Animation: Explode */
-        @keyframes explode {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        .explode-animation {
-            animation: explode 1s forwards;
-        }
-    </style>
+    /* Fade Animation */
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
 </head>
 <body>
-    <div id="pomodoro-container">
-        <h1>Pomodoro Timer</h1>
-        <div id="currentTime"><span class="label">Current:</span> --:-- --</div>
-        <div id="timer">--:--</div>
-        <div id="activityTimeline">
-            <div id="currentActivity" class="activity current-activity">
-                <div class="activity-indicator"></div>
-                <div class="activity-name">Current: --</div>
-                <div class="activity-time">--:-- - --:--</div>
-            </div>
-            <div id="nextActivity" class="activity next-activity">
-                <div class="activity-indicator"></div>
-                <div class="activity-name">Next: --</div>
-                <div class="activity-time">--:-- - --:--</div>
-            </div>
-        </div>
+  <div id="container">
+    <h1 id="state-label">--</h1>
+    <div id="timer">--:--</div>
+    <div id="next-info">
+      <div class="next-label">NEXT</div>
+      <div class="next-content">
+        <span class="morph-dot"></span>
+        <span id="next-text">--</span>
+      </div>
     </div>
+    <div id="progressBar"><div id="progress"></div></div>
+  </div>
 
+  <script>
+  (function(){
+    // Day-by-day hardcoded schedule
+    const schedule = {
+      Monday: [
+        { start: '8:45 AM',  end: '9:12 AM',  name: 'Pomodoro 1' },
+        { start: '9:12 AM',  end: '9:17 AM',  name: 'Break' },
+        { start: '9:17 AM',  end: '9:44 AM',  name: 'Pomodoro 2' },
+        { start: '9:44 AM',  end: '9:49 AM',  name: 'Break' },
+        { start: '9:49 AM',  end: '10:16 AM', name: 'Pomodoro 3' },
+        { start: '10:16 AM', end: '10:26 AM', name: 'Long Break' },
+        { start: '10:26 AM', end: '10:53 AM', name: 'Pomodoro 4' },
+        { start: '10:53 AM', end: '10:58 AM', name: 'Break' },
+        { start: '10:58 AM', end: '11:25 AM', name: 'Pomodoro 5' },
+        { start: '11:25 AM', end: '12:00 PM', name: 'Break' },
+        { start: '12:00 PM', end: '12:45 PM', name: 'Lunch' },
+        { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift' },
+        { start: '1:15 PM',  end: '1:30 PM',  name: 'Focus Time' },
+        { start: '1:30 PM',  end: '1:40 PM',  name: 'Break' },
+        { start: '1:40 PM',  end: '2:40 PM',  name: 'Focus Time' },
+        { start: '2:40 PM',  end: '2:50 PM',  name: 'Break' },
+        { start: '2:50 PM',  end: '3:20 PM',  name: 'Focus Time' },
+        { start: '3:20 PM',  end: '3:25 PM',  name: 'Break' },
+        { start: '3:25 PM',  end: '3:55 PM',  name: 'Insights' },
+        { start: '3:55 PM',  end: '4:00 PM',  name: 'Clean Up' },
+        { start: '4:00 PM',  end: '11:59 PM', name: 'Free Time' }
+      ],
+      Tuesday: [
+        { start: '8:45 AM',  end: '9:12 AM',  name: 'Pomodoro 1' },
+        { start: '9:12 AM',  end: '9:17 AM',  name: 'Break' },
+        { start: '9:17 AM',  end: '9:44 AM',  name: 'Pomodoro 2' },
+        { start: '9:44 AM',  end: '9:49 AM',  name: 'Break' },
+        { start: '9:49 AM',  end: '10:16 AM', name: 'Pomodoro 3' },
+        { start: '10:16 AM', end: '10:26 AM', name: 'Long Break' },
+        { start: '10:26 AM', end: '10:53 AM', name: 'Pomodoro 4' },
+        { start: '10:53 AM', end: '10:58 AM', name: 'Break' },
+        { start: '10:58 AM', end: '11:25 AM', name: 'Pomodoro 5' },
+        { start: '11:25 AM', end: '12:00 PM', name: 'Break' },
+        { start: '12:00 PM', end: '12:45 PM', name: 'Lunch' },
+        { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift' },
+        { start: '1:15 PM',  end: '1:30 PM',  name: 'Focus Time' },
+        { start: '1:30 PM',  end: '1:40 PM',  name: 'Break' },
+        { start: '1:40 PM',  end: '2:40 PM',  name: 'Focus Time' },
+        { start: '2:40 PM',  end: '2:50 PM',  name: 'Break' },
+        { start: '2:50 PM',  end: '3:20 PM',  name: 'Focus Time' },
+        { start: '3:20 PM',  end: '3:25 PM',  name: 'Break' },
+        { start: '3:25 PM',  end: '3:55 PM',  name: 'Insights' },
+        { start: '3:55 PM',  end: '4:00 PM',  name: 'Clean Up' },
+        { start: '4:00 PM',  end: '11:59 PM', name: 'Free Time' }
+      ],
+      Wednesday: [
+        { start: '8:45 AM',  end: '9:12 AM',  name: 'Pomodoro 1' },
+        { start: '9:12 AM',  end: '9:17 AM',  name: 'Break' },
+        { start: '9:17 AM',  end: '9:44 AM',  name: 'Pomodoro 2' },
+        { start: '9:44 AM',  end: '9:49 AM',  name: 'Break' },
+        { start: '9:49 AM',  end: '10:16 AM', name: 'Pomodoro 3' },
+        { start: '10:16 AM', end: '10:26 AM', name: 'Long Break' },
+        { start: '10:26 AM', end: '10:53 AM', name: 'Pomodoro 4' },
+        { start: '10:53 AM', end: '10:58 AM', name: 'Break' },
+        { start: '10:58 AM', end: '11:25 AM', name: 'Pomodoro 5' },
+        { start: '11:25 AM', end: '12:00 PM', name: 'Break' },
+        { start: '12:00 PM', end: '12:45 PM', name: 'Lunch' },
+        { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift' },
+        { start: '1:15 PM',  end: '1:30 PM',  name: 'Focus Time' },
+        { start: '1:30 PM',  end: '1:40 PM',  name: 'Break' },
+        { start: '1:40 PM',  end: '2:40 PM',  name: 'Focus Time' },
+        { start: '2:40 PM',  end: '2:50 PM',  name: 'Break' },
+        { start: '2:50 PM',  end: '3:20 PM',  name: 'Focus Time' },
+        { start: '3:20 PM',  end: '3:25 PM',  name: 'Break' },
+        { start: '3:25 PM',  end: '3:55 PM',  name: 'Insights' },
+        { start: '3:55 PM',  end: '4:00 PM',  name: 'Clean Up' },
+        { start: '4:00 PM',  end: '11:59 PM', name: 'Free Time' }
+      ],
+      Thursday: [
+        { start: '8:45 AM',  end: '9:12 AM',  name: 'Pomodoro 1' },
+        { start: '9:12 AM',  end: '9:17 AM',  name: 'Break' },
+        { start: '9:17 AM',  end: '9:44 AM',  name: 'Pomodoro 2' },
+        { start: '9:44 AM',  end: '9:49 AM',  name: 'Break' },
+        { start: '9:49 AM',  end: '10:16 AM', name: 'Pomodoro 3' },
+        { start: '10:16 AM', end: '10:26 AM', name: 'Long Break' },
+        { start: '10:26 AM', end: '10:53 AM', name: 'Pomodoro 4' },
+        { start: '10:53 AM', end: '10:58 AM', name: 'Break' },
+        { start: '10:58 AM', end: '11:25 AM', name: 'Pomodoro 5' },
+        { start: '11:25 AM', end: '12:00 PM', name: 'Break' },
+        { start: '12:00 PM', end: '12:45 PM', name: 'Lunch' },
+        { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift' },
+        { start: '1:15 PM',  end: '1:30 PM',  name: 'Focus Time' },
+        { start: '1:30 PM',  end: '1:40 PM',  name: 'Break' },
+        { start: '1:40 PM',  end: '2:40 PM',  name: 'Focus Time' },
+        { start: '2:40 PM',  end: '2:50 PM',  name: 'Break' },
+        { start: '2:50 PM',  end: '3:20 PM',  name: 'Focus Time' },
+        { start: '3:20 PM',  end: '3:25 PM',  name: 'Break' },
+        { start: '3:25 PM',  end: '3:55 PM',  name: 'Insights' },
+        { start: '3:55 PM',  end: '4:00 PM',  name: 'Clean Up' },
+        { start: '4:00 PM',  end: '11:59 PM', name: 'Free Time' }
+      ],
+      Friday: [
+        { start: '8:45 AM',  end: '9:12 AM',  name: 'Pomodoro 1' },
+        { start: '9:12 AM',  end: '9:17 AM',  name: 'Break' },
+        { start: '9:17 AM',  end: '9:44 AM',  name: 'Pomodoro 2' },
+        { start: '9:44 AM',  end: '9:49 AM',  name: 'Break' },
+        { start: '9:49 AM',  end: '10:16 AM', name: 'Pomodoro 3' },
+        { start: '10:16 AM', end: '10:26 AM', name: 'Long Break' },
+        { start: '10:26 AM', end: '10:53 AM', name: 'Pomodoro 4' },
+        { start: '10:53 AM', end: '10:58 AM', name: 'Break' },
+        { start: '10:58 AM', end: '11:25 AM', name: 'Pomodoro 5' },
+        { start: '11:25 AM', end: '12:00 PM', name: 'Break' },
+        { start: '12:00 PM', end: '12:45 PM', name: 'Lunch' },
+        { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift' },
+        { start: '1:15 PM',  end: '1:30 PM',  name: 'Focus Time' },
+        { start: '1:30 PM',  end: '1:40 PM',  name: 'Break' },
+        { start: '1:40 PM',  end: '2:40 PM',  name: 'Focus Time' },
+        { start: '2:40 PM',  end: '2:50 PM',  name: 'Break' },
+        { start: '2:50 PM',  end: '3:20 PM',  name: 'Focus Time' },
+        { start: '3:20 PM',  end: '3:25 PM',  name: 'Break' },
+        { start: '3:25 PM',  end: '3:55 PM',  name: 'Insights' },
+        { start: '3:55 PM',  end: '4:00 PM',  name: 'Clean Up' },
+        { start: '4:00 PM',  end: '11:59 PM', name: 'Free Time' }
+      ]
+    };
 
-    <script>
-    (function() {
-const schedule = {
-    Monday: [
-        { start: "8:45 AM", end: "9:15 AM", name: "Pomodoro 1" },
-        { start: "9:15 AM", end: "9:30 AM", name: "Break (Meet in atrium)" },
-        { start: "9:30 AM", end: "10:15 AM", name: "Pomodoro 2" },
-        { start: "10:15 AM", end: "10:30 AM", name: "Break" },
-        { start: "10:30 AM", end: "11:15 AM", name: "Pomodoro 3" },
-        { start: "11:15 AM", end: "11:25 AM", name: "Break" },
-        { start: "11:25 AM", end: "12:00 AM", name: "Pomodoro 4" },
-        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-        { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
-        { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
-        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-    ],
-    Tuesday: [
-        { start: "8:45 AM", end: "9:15 AM", name: "Pomodoro 1" },
-        { start: "9:15 AM", end: "9:30 AM", name: "Break (Meet in atrium)" },
-        { start: "9:30 AM", end: "10:15 AM", name: "Pomodoro 2" },
-        { start: "10:15 AM", end: "10:30 AM", name: "Break" },
-        { start: "10:30 AM", end: "11:15 AM", name: "Pomodoro 3" },
-        { start: "11:15 AM", end: "11:25 AM", name: "Break" },
-        { start: "11:25 AM", end: "12:00 AM", name: "Pomodoro 4" },
-        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-        { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
-        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-    ],
-    Wednesday: [
-        { start: "8:45 AM", end: "9:15 AM", name: "Pomodoro 1" },
-        { start: "9:15 AM", end: "9:30 AM", name: "Break (Meet in atrium)" },
-        { start: "9:30 AM", end: "10:15 AM", name: "Pomodoro 2" },
-        { start: "10:15 AM", end: "10:30 AM", name: "Break" },
-        { start: "10:30 AM", end: "11:15 AM", name: "Pomodoro 3" },
-        { start: "11:15 AM", end: "11:25 AM", name: "Break" },
-        { start: "11:25 AM", end: "12:00 AM", name: "Pomodoro 4" },
-        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-        { start: "3:25 PM", end: "3:55 PM", name: "Insights" },
-        { start: "3:55 PM", end: "4:00 PM", name: "Clean Up Time" },
-        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-    ],
-    Thursday: [
-        { start: "8:45 AM", end: "9:15 AM", name: "Pomodoro 1" },
-        { start: "9:15 AM", end: "9:30 AM", name: "Break (Meet in atrium)" },
-        { start: "9:30 AM", end: "10:15 AM", name: "Pomodoro 2" },
-        { start: "10:15 AM", end: "10:30 AM", name: "Break" },
-        { start: "10:30 AM", end: "11:15 AM", name: "Pomodoro 3" },
-        { start: "11:15 AM", end: "11:25 AM", name: "Break" },
-        { start: "11:25 AM", end: "12:00 AM", name: "Pomodoro 4" },
-        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-        { start: "2:50 PM", end: "3:20 PM", name: "Focus Time" },
-        { start: "3:20 PM", end: "3:25 PM", name: "Break" },
-        { start: "3:25 PM", end: "4:00 PM", name: "Focus time" },
-        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-    ],
-    Friday: [
-        { start: "8:45 AM", end: "9:15 AM", name: "Pomodoro 1" },
-        { start: "9:15 AM", end: "9:30 AM", name: "Break (Meet in atrium)" },
-        { start: "9:30 AM", end: "10:15 AM", name: "Pomodoro 2" },
-        { start: "10:15 AM", end: "10:30 AM", name: "Break" },
-        { start: "10:30 AM", end: "11:15 AM", name: "Pomodoro 3" },
-        { start: "11:15 AM", end: "11:25 AM", name: "Break" },
-        { start: "11:25 AM", end: "12:00 AM", name: "Pomodoro 4" },
-        { start: "12:00 PM", end: "12:45 PM", name: "Lunch" },
-        { start: "12:45 PM", end: "1:15 PM", name: "Brain Lift" },
-        { start: "1:15 PM", end: "1:30 PM", name: "Focus Time" },
-        { start: "1:30 PM", end: "1:40 PM", name: "Break" },
-        { start: "1:40 PM", end: "2:40 PM", name: "Focus Time" },
-        { start: "2:40 PM", end: "2:50 PM", name: "Break" },
-        { start: "2:50 PM", end: "3:45 PM", name: "Accountability Presentations" },
-        { start: "3:45 PM", end: "3:55 PM", name: "Clean Up Time" },
-        { start: "3:55 PM", end: "4:00 PM", name: "Leasure Time" },
-        { start: "4:00 PM", end: "8:45 AM", name: "Free Time" }
-    ],
-    Saturday: [
-        { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
-    ],
-    Sunday: [
-        { start: "12:00 AM", end: "11:59 PM", name: "Free Time" }
-    ]
-};
-
-    const colors = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-        '#FF8C00', '#9932CC', '#8FBC8F', '#DB7093', '#20B2AA',
-        '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#BA55D3',
-        '#1E90FF', '#FF6347', '#7B68EE', '#3CB371', '#F08080'
-    ];
-    const animations = ['grow-animation', 'fall-animation', 'roll-animation', 'explode-animation'];
-    let previousBlockName = "";
-    let currentColor = "";
-
-    function getCSTTime() {
-        return new Date(new Date().toLocaleString("en-US", {timeZone: "America/Chicago"}));
+    function parseTime(str) {
+      const [time,p] = str.split(' ');
+      let [h,m] = time.split(':').map(Number);
+      if (p === 'PM' && h < 12) h += 12;
+      if (p === 'AM' && h === 12) h = 0;
+      return { hour: h, minute: m };
     }
 
-    function formatTime(date) {
-        return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    function getCST() {
+      return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
     }
 
-    function changeBackgroundColor() {
-        let newColor;
-        do {
-            newColor = colors[Math.floor(Math.random() * colors.length)];
-        } while (newColor === currentColor);
-        currentColor = newColor;
-        document.body.style.backgroundColor = currentColor;
+    function setMorph() {
+      const duration = (Math.random() * 4 + 5).toFixed(2) + 's';
+      document.querySelector('.morph-dot').style.setProperty('--morph-duration', duration);
     }
 
-    function applyAnimation() {
-        const container = document.getElementById('pomodoro-container');
-        const animation = animations[Math.floor(Math.random() * animations.length)];
-        container.classList.add(animation);
-
-        setTimeout(() => {
-            container.classList.remove(animation);
-            changeBackgroundColor();
-        }, 2000);
+    function getBlocksForDay(date) {
+      const dayName = date.toLocaleString('en-US', { weekday: 'long' });
+      const raw = schedule[dayName] || [];
+      return raw.map(b => {
+        const sd = parseTime(b.start);
+        const ed = parseTime(b.end);
+        const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), sd.hour, sd.minute);
+        let end = new Date(date.getFullYear(), date.getMonth(), date.getDate(), ed.hour, ed.minute);
+        // if end <= start, assume next day
+        if (end <= start) end.setDate(end.getDate() + 1);
+        return { name: b.name, start, end };
+      });
     }
 
-    function parseTimeToMinutes(timeString) {
-        const [time, period] = timeString.split(' ');
-        let [hours, minutes] = time.split(':').map(Number);
-        if (period === 'PM' && hours !== 12) hours += 12;
-        if (period === 'AM' && hours === 12) hours = 0;
-        return hours * 60 + minutes;
+    function update() {
+      const now = getCST();
+      let blocks = getBlocksForDay(now);
+      let current = blocks.find(b => now >= b.start && now < b.end) || null;
+
+      // find next block
+      let next = blocks.find(b => b.start > now) || null;
+      let nextDate = now;
+      if (!next) {
+        // advance to next weekday with blocks
+        nextDate = new Date(now);
+        do { nextDate.setDate(nextDate.getDate() + 1); } 
+        while (!schedule[nextDate.toLocaleString('en-US',{weekday:'long'})]);
+        blocks = getBlocksForDay(nextDate);
+        next = blocks[0] || null;
+      }
+
+      // theme by current or next
+      const target = current || next;
+      let accent = '#8fc93a';
+      if (target.name.toLowerCase().includes('pomodoro')) accent = '#8fc93a';
+      else if (target.name.toLowerCase().includes('lunch')) accent = '#00ffe0';
+      else accent = '#ff0066';
+      document.documentElement.style.setProperty('--accent', accent);
+
+      // display labels
+      document.getElementById('state-label').textContent = current ? current.name : 'Starting In';
+      document.getElementById('next-text').textContent = next ? next.name : '--';
+
+      // countdown to next.start or current.end
+      const targetTime = (current ? current.end : next.start).getTime();
+      const diff = Math.max(0, targetTime - now.getTime());
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+      // progress
+      const progressEl = document.getElementById('progress');
+      if (current) {
+        const total = current.end.getTime() - current.start.getTime();
+        const elapsed = now.getTime() - current.start.getTime();
+        progressEl.style.width = `${(elapsed / total) * 100}%`;
+      } else {
+        progressEl.style.width = '0%';
+      }
+
+      // animations
+      ['state-label','timer','next-text','progress'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.add('fade-in');
+        el.addEventListener('animationend', () => el.classList.remove('fade-in'), { once: true });
+      });
+
+      requestAnimationFrame(update);
     }
 
-    function updateTimer() {
-        const now = getCSTTime();
-        const currentTimeString = formatTime(now);
-        document.getElementById('currentTime').innerHTML = `<span class="label">Current Time:</span> ${currentTimeString}`;
-
-        const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
-        const todaySchedule = schedule[currentDay];
-
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const currentSeconds = now.getSeconds();
-
-        let currentBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-        let nextBlock = { name: "Outside Schedule", start: "12:00 AM", end: "12:00 AM" };
-        let isWithinSchedule = false;
-
-        // Find the current block and next block
-        for (let i = 0; i < todaySchedule.length; i++) {
-            const block = todaySchedule[i];
-            const startMinutes = parseTimeToMinutes(block.start);
-            const endMinutes = parseTimeToMinutes(block.end);
-
-            if (currentMinutes * 60 + currentSeconds >= startMinutes * 60 && currentMinutes * 60 + currentSeconds < endMinutes * 60) {
-                currentBlock = block;
-                nextBlock = todaySchedule[(i + 1) % todaySchedule.length];
-                isWithinSchedule = true;
-                break;
-            }
-        }
-
-        if (!isWithinSchedule) {
-            // Find the next block
-            for (let block of todaySchedule) {
-                if (parseTimeToMinutes(block.start) > currentMinutes) {
-                    nextBlock = block;
-                    break;
-                }
-            }
-        }
-
-        if (currentBlock.name !== previousBlockName) {
-            applyAnimation();
-            previousBlockName = currentBlock.name;
-        }
-
-        let timeLeft;
-        if (isWithinSchedule) {
-            const endSeconds = parseTimeToMinutes(currentBlock.end) * 60;
-            timeLeft = endSeconds - (currentMinutes * 60 + currentSeconds);
-        } else {
-            const nextStartSeconds = parseTimeToMinutes(nextBlock.start) * 60;
-            timeLeft = ((nextStartSeconds - (currentMinutes * 60 + currentSeconds) + 86400) % 86400);
-        }
-
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        // Update activity timeline
-        const currentActivityEl = document.getElementById('currentActivity');
-        const nextActivityEl = document.getElementById('nextActivity');
-
-        currentActivityEl.querySelector('.activity-name').textContent = `Current: ${currentBlock.name}`;
-        currentActivityEl.querySelector('.activity-time').textContent = `${currentBlock.start} - ${currentBlock.end}`;
-
-        nextActivityEl.querySelector('.activity-name').textContent = `Next: ${nextBlock.name}`;
-        nextActivityEl.querySelector('.activity-time').textContent = `${nextBlock.start} - ${nextBlock.end}`;
-
-        // Schedule the next update
-        setTimeout(updateTimer, 1000);
-    }
-
-    updateTimer();
-})();
-    </script>
+    setMorph();
+    update();
+  })();
+  </script>
 </body>
 </html>
