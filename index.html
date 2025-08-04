@@ -18,7 +18,9 @@
     html, body { height: 100%; overflow: hidden; }
     body {
       font-family: 'Inter', sans-serif;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(120deg, var(--bg-start), var(--bg-end));
       background-size: 200% 200%;
       animation: gradientShift 240s var(--transition) infinite;
@@ -29,43 +31,68 @@
     body::before {
       content: '';
       position: absolute; top:0; left:0; right:0; bottom:0;
-      background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 3px, transparent 3px, transparent 15px);
+      background: repeating-linear-gradient(45deg,
+        rgba(255,255,255,0.05) 0,
+        rgba(255,255,255,0.05) 3px,
+        transparent 3px,
+        transparent 15px
+      );
       background-size:20px 20px;
       animation: stripesMove 14400s linear infinite;
-      pointer-events: none; z-index: 0;
+      pointer-events: none;
+      z-index: 0;
     }
     @keyframes stripesMove { to { background-position:-5000px 5000px; } }
     #fullscreen-btn {
-      position: absolute; top:16px; right:16px; z-index:2;
-      background: rgba(0,0,0,0.5); border:none; color:var(--text);
-      padding:8px; border-radius:6px; cursor:pointer;
-      font-size:18px; transition: background var(--transition);
+      position: absolute; top: 16px; right: 16px; z-index: 2;
+      background: rgba(0,0,0,0.5); border: none; color: var(--text);
+      padding: 8px; border-radius: 6px; cursor: pointer;
+      font-size: 18px; transition: background var(--transition);
     }
     #fullscreen-btn:hover { background: rgba(0,0,0,0.7); }
     #container {
-      position: relative; z-index:1;
-      width:380px; max-width:90%; padding:2rem 1.5rem;
-      background: rgba(0,0,0,0.35); border-radius:16px;
-      text-align: center; box-shadow:0 12px 24px rgba(0,0,0,0.5);
+      position: relative; z-index: 1;
+      width: 380px; max-width: 90%;
+      background: rgba(0,0,0,0.35); border-radius: 16px;
+      padding: 2rem 1.5rem; text-align: center;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.5);
       transition: color var(--transition);
     }
-    h1 { font-size:2.4rem; margin-bottom:0.5rem; text-transform: uppercase; color: var(--text); }
-    #timer { font-size:4rem; font-weight:600; margin:0.5rem 0 1rem; color: var(--text); }
-    #next-info { display:flex; flex-direction: column; align-items: center; margin-bottom:1rem; color: var(--text); }
-    .next-label { font-size:0.75rem; color: var(--muted); letter-spacing:1.5px; margin-bottom:0.25rem; }
-    .next-content { display:flex; align-items: center; }
-    .morph-dot {
-      width:16px; height:16px; margin-right:8px; border-radius:50%;
-      background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
-      box-shadow:0 0 8px var(--accent);
-      animation: morph var(--morph-duration,6s) ease-in-out infinite;
-      transform-origin:center;
+    h1 {
+      font-size: 2.4rem; margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      color: var(--text);
     }
-    @keyframes morph { 0%,100%{transform:scale(1);}25%{transform:scale(1.1) rotate(20deg);}50%{transform:scale(0.9) rotate(-20deg);}75%{transform:scale(1.05) rotate(10deg);} }
-    #progressBar { width:100%; height:8px; background: rgba(255,255,255,0.2); border-radius:4px; overflow:hidden; margin-top:1rem; }
-    #progress { width:0; height:100%; background: var(--accent); transition: width 1s linear; }
+    #timer {
+      font-size: 4rem; font-weight: 600;
+      margin: 0.5rem 0 1rem;
+      color: var(--text);
+    }
+    #next-info {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .next-label {
+      font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 1.5px; margin-bottom: 0.25rem;
+    }
+    .next-content {
+      display: flex; align-items: center;
+    }
+    .morph-dot {
+      width: 16px; height: 16px; margin-right: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
+      box-shadow: 0 0 8px var(--accent);
+      animation: morph var(--morph-duration,6s) ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes morph { 0%,100% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.1) rotate(20deg); } 50% { transform: scale(0.9) rotate(-20deg); } 75% { transform: scale(1.05) rotate(10deg); } }
+    #progressBar { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; margin-top: 1rem; }
+    #progress { width: 0; height: 100%; background: var(--accent); transition: width 1s linear; }
     .fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity:0;} to { opacity:1;} }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -200,36 +227,104 @@
       ]
     };
 
-    function parseTime(s){const[t,p]=s.split(' '),[h,m]=t.split(':').map(Number);if(p==='PM'&&h<12)h+=12;if(p==='AM'&&h===12)h=0;return{hour:h,minute:m};}
-    function getCST(){return new Date(new Date().toLocaleString('en-US',{timeZone:'America/Chicago'}));}
-    const dot=document.querySelector('.morph-dot'),stateLabel=document.getElementById('state-label'),timerEl=document.getElementById('timer'),nextText=document.getElementById('next-text'),progressEl=document.getElementById('progress'),root=document.documentElement;
-    document.getElementById('fullscreen-btn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();});
-    function setMorph(){dot.style.setProperty('--morph-duration',(Math.random()*4+5).toFixed(2)+'s');}
-    function getBlocksForDay(date){
-      const day=date.toLocaleString('en-US',{weekday:'long'}),raw=schedule[day]||[];
-      return raw.map(b=>{const sd=parseTime(b.start),ed=parseTime(b.end),start=new Date(date.getFullYear(),date.getMonth(),date.getDate(),sd.hour,sd.minute),end=new Date(start);end.setHours(ed.hour,ed.minute);if(end<=start)end.setDate(end.getDate()+1);return{name:b.name,start,end};});
+    function parseTime(str) {
+      const [time, period] = str.split(' ');
+      let [h, m] = time.split(':').map(Number);
+      if (period === 'PM' && h < 12) h += 12;
+      if (period === 'AM' && h === 12) h = 0;
+      return { hour: h, minute: m };
     }
-    function update(){
-      const now=getCST(),blocks=getBlocksForDay(now),current=blocks.find(b=>now>=b.start&&now<b.end)||null;
-      let next=current?blocks[(blocks.indexOf(current)+1)%blocks.length]:blocks.find(b=>b.start>now)||blocks[0];
-      stateLabel.textContent=current?current.name:'Starting In';
-      nextText.textContent=next?next.name:'--';
-      // theme strictly by current name
-      let name=current?current.name.toLowerCase().trim():'';
-      let bgStart='#1b2a18',bgEnd='#22321f',accent='#8fc93a';
-      if(name==='lunch') { bgStart='#006666'; bgEnd='#009999'; accent='#00ffe0'; }
-      else if(name==='break') { bgStart='#ff6666'; bgEnd='#ff9999'; accent='#ff0066'; }
-      root.style.setProperty('--bg-start',bgStart);
-      root.style.setProperty('--bg-end',bgEnd);
-      root.style.setProperty('--accent',accent);
-      document.body.style.background=`linear-gradient(120deg, ${bgStart}, ${bgEnd})`;
-      const target=(current?current.end:next.start).getTime(),diff=Math.max(0,target-now.getTime()),m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);
-      timerEl.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(current){const total=current.end.getTime()-current.start.getTime(),elapsed=now.getTime()-current.start.getTime();progressEl.style.width=`${(elapsed/total)*100}%`;}else progressEl.style.width='0%';
-      [stateLabel,timerEl,nextText,progressEl].forEach(el=>{el.classList.add('fade-in');el.addEventListener('animationend',()=>el.classList.remove('fade-in'),{once:true});});
-      setMorph();requestAnimationFrame(update);
+
+    function getCST() {
+      return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
     }
-    setMorph();update();
+
+    const dot = document.querySelector('.morph-dot');
+    const stateLabel = document.getElementById('state-label');
+    const timerEl = document.getElementById('timer');
+    const nextText = document.getElementById('next-text');
+    const progressEl = document.getElementById('progress');
+    const root = document.documentElement;
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    });
+
+    function setMorph() {
+      const duration = (Math.random() * 4 + 5).toFixed(2) + 's';
+      dot.style.setProperty('--morph-duration', duration);
+    }
+
+    function getBlocksForDay(date) {
+      const dayName = date.toLocaleString('en-US', { weekday: 'long' });
+      const raw = schedule[dayName] || [];
+      return raw.map(b => {
+        const sd = parseTime(b.start);
+        const ed = parseTime(b.end);
+        const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), sd.hour, sd.minute);
+        let end = new Date(start);
+        end.setHours(ed.hour, ed.minute);
+        if (end <= start) end.setDate(end.getDate() + 1);
+        return { name: b.name, start, end };
+      });
+    }
+
+    function update() {
+      const now = getCST();
+      const blocks = getBlocksForDay(now);
+      const current = blocks.find(b => now >= b.start && now < b.end) || null;
+      let next;
+      if (current) {
+        next = blocks[(blocks.indexOf(current) + 1) % blocks.length];
+      } else {
+        next = blocks.find(b => b.start > now) || blocks[0];
+      }
+      stateLabel.textContent = current ? current.name : 'Starting In';
+      nextText.textContent = next ? next.name : '--';
+
+      // Theme based strictly on current block name
+      let name = current ? current.name : '';
+      let bgStart = '#1b2a18';
+      let bgEnd = '#22321f';
+      let accent = '#8fc93a';
+      if (name === 'Lunch') {
+        bgStart = '#006666'; bgEnd = '#009999'; accent = '#00ffe0';
+      } else if (name === 'Break') {
+        bgStart = '#ff6666'; bgEnd = '#ff9999'; accent = '#ff0066';
+      }
+      root.style.setProperty('--bg-start', bgStart);
+      root.style.setProperty('--bg-end', bgEnd);
+      root.style.setProperty('--accent', accent);
+      document.body.style.background = `linear-gradient(120deg, ${bgStart}, ${bgEnd})`;
+
+      // Countdown
+      const targetTime = (current ? current.end : next.start).getTime();
+      let diff = Math.max(0, targetTime - now.getTime());
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      timerEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      // Progress bar
+      if (current) {
+        const total = current.end.getTime() - current.start.getTime();
+        const elapsed = now.getTime() - current.start.getTime();
+        progressEl.style.width = `${(elapsed / total) * 100}%`;
+      } else {
+        progressEl.style.width = '0%';
+      }
+
+      // Fade animation
+      [stateLabel, timerEl, nextText, progressEl].forEach(el => {
+        el.classList.add('fade-in');
+        el.addEventListener('animationend', () => el.classList.remove('fade-in'), { once: true });
+      });
+
+      setMorph();
+      requestAnimationFrame(update);
+    }
+
+    setMorph();
+    update();
   })();
   </script>
 </body>
