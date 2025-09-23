@@ -44,19 +44,22 @@
       z-index:0;
     }
     @keyframes stripesMove { to { background-position:-5000px 5000px; } }
-    #fullscreen-btn {
+    #controls {
       position:absolute;
       top:16px; right:16px; z-index:2;
+      display:flex; gap:8px;
+    }
+    .top-btn {
       background:rgba(0,0,0,0.5);
       border:none;
       color:var(--text);
-      padding:8px;
+      padding:8px 10px;
       border-radius:6px;
       cursor:pointer;
-      font-size:18px;
+      font-size:14px;
       transition:background var(--transition);
     }
-    #fullscreen-btn:hover { background:rgba(0,0,0,0.7); }
+    .top-btn:hover { background:rgba(0,0,0,0.7); }
     #container {
       position:relative; z-index:1;
       width:380px; max-width:90%;
@@ -123,7 +126,15 @@
   </style>
 </head>
 <body>
-  <button id="fullscreen-btn" aria-label="Toggle Fullscreen">⛶</button>
+  <div id="controls">
+    <button id="sound-btn" class="top-btn" aria-label="Toggle Sound">🔔 Sound: Off</button>
+    <button id="fullscreen-btn" class="top-btn" aria-label="Toggle Fullscreen">⛶ Fullscreen</button>
+  </div>
+
+  <!-- Small built-in chime. Replace `src` with your own bell.mp3 if you prefer. -->
+  <audio id="bell" preload="auto"
+    src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAZGF0YQwAAACAgICAf39/f4+Pj46Ojo2NjYyMjIxMTExHR0dHBwcGBgYFRUVFBQUExMTDQ0NCwsKCQkJCAgICQkJDAwMDQ0NERERExMTFhYWFxcX"></audio>
+
   <div id="container">
     <h1 id="state-label">--</h1>
     <div id="timer">--:--</div>
@@ -133,6 +144,7 @@
     </div>
     <div id="progressBar"><div id="progress"></div></div>
   </div>
+
   <script>
     (function() {
       const schedule = {
@@ -200,7 +212,7 @@
           { start: '10:28 AM', end: '10:55 AM', name: 'Pomodoro 4' },
           { start: '10:55 AM', end: '11:01 AM', name: 'Break'        },
           { start: '11:01 AM', end: '11:28 AM', name: 'Pomodoro 5' },
-          { start: '11:28 AM', end: '11:34 AM', name: 'Break'        },
+          { start: '11:28 AM', end: '11:34 AM',  name: 'Break'        },
           { start: '11:34 AM', end: '12:00 PM', name: 'Pomodoro 6' },
           { start: '12:00 PM', end: '12:45 PM', name: 'Lunch'        },
           { start: '12:45 PM', end: '1:15 PM',  name: 'Brain Lift'  },
@@ -273,106 +285,151 @@
         ]
       };
 
+      function parseTime(str) {
+        const [time, period] = str.split(' ');
+        let [h, m] = time.split(':').map(Number);
+        if (period === 'PM' && h < 12) h += 12;
+        if (period === 'AM' && h === 12) h = 0;
+        return { hour: h, minute: m };
+      }
 
-    function parseTime(str) {
-      const [time, period] = str.split(' ');
-      let [h, m] = time.split(':').map(Number);
-      if (period === 'PM' && h < 12) h += 12;
-      if (period === 'AM' && h === 12) h = 0;
-      return { hour: h, minute: m };
-    }
+      // Uses America/New_York as you had it (function name kept for backwards-compat)
+      function getCST() {
+        return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      }
 
-    function getCST() {
-      return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    }
+      const dot = document.querySelector('.morph-dot');
+      const stateLabel = document.getElementById('state-label');
+      const timerEl = document.getElementById('timer');
+      const nextText = document.getElementById('next-text');
+      const progressEl = document.getElementById('progress');
+      const root = document.documentElement;
 
-    const dot = document.querySelector('.morph-dot');
-    const stateLabel = document.getElementById('state-label');
-    const timerEl = document.getElementById('timer');
-    const nextText = document.getElementById('next-text');
-    const progressEl = document.getElementById('progress');
-    const root = document.documentElement;
-    document.getElementById('fullscreen-btn').addEventListener('click', () => {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-      else document.exitFullscreen();
-    });
+      // 🔔 Sound controls
+      const bell = document.getElementById('bell');
+      const soundBtn = document.getElementById('sound-btn');
+      let muted = JSON.parse(localStorage.getItem('bellMuted') || 'true'); // start muted
+      updateSoundUI();
 
-    function setMorph() {
-      const duration = (Math.random() * 4 + 5).toFixed(2) + 's';
-      dot.style.setProperty('--morph-duration', duration);
-    }
-
-    function getBlocksForDay(date) {
-      const dayName = date.toLocaleString('en-US', { weekday: 'long' });
-      const raw = schedule[dayName] || [];
-      return raw.map(b => {
-        const sd = parseTime(b.start);
-        const ed = parseTime(b.end);
-        const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), sd.hour, sd.minute);
-        let end = new Date(start);
-        end.setHours(ed.hour, ed.minute);
-        if (end <= start) end.setDate(end.getDate() + 1);
-        return { name: b.name, start, end };
+      soundBtn.addEventListener('click', async () => {
+        muted = !muted;
+        localStorage.setItem('bellMuted', JSON.stringify(muted));
+        updateSoundUI();
+        if (!muted) {
+          // Unlock audio on first interaction per autoplay policies
+          try {
+            await bell.play();
+            bell.pause(); bell.currentTime = 0;
+          } catch (e) { /* ignore */ }
+        }
       });
-    }
 
-    function update() {
-      const now = getCST();
-      const blocks = getBlocksForDay(now);
-      const current = blocks.find(b => now >= b.start && now < b.end) || null;
-      let next;
-      if (current) {
-        next = blocks[(blocks.indexOf(current) + 1) % blocks.length];
-      } else {
-        next = blocks.find(b => b.start > now) || blocks[0];
-      }
-      stateLabel.textContent = current ? current.name : 'Starting In';
-      nextText.textContent = next ? next.name : '--';
-
-      // Theme based strictly on current block name
-      let name = current ? current.name : '';
-      let bgStart = '#1b2a18';
-      let bgEnd = '#22321f';
-      let accent = '#8fc93a';
-      if (name === 'Lunch') {
-        bgStart = '#006666'; bgEnd = '#009999'; accent = '#00ffe0';
-      } else if (name === 'Break') {
-        bgStart = '#ff6666'; bgEnd = '#ff9999'; accent = '#ff0066';
-      }
-      root.style.setProperty('--bg-start', bgStart);
-      root.style.setProperty('--bg-end', bgEnd);
-      root.style.setProperty('--accent', accent);
-      document.body.style.background = `linear-gradient(120deg, ${bgStart}, ${bgEnd})`;
-
-      // Countdown
-      const targetTime = (current ? current.end : next.start).getTime();
-      let diff = Math.max(0, targetTime - now.getTime());
-      const m = Math.floor(diff / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      timerEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-      // Progress bar
-      if (current) {
-        const total = current.end.getTime() - current.start.getTime();
-        const elapsed = now.getTime() - current.start.getTime();
-        progressEl.style.width = `${(elapsed / total) * 100}%`;
-      } else {
-        progressEl.style.width = '0%';
+      function updateSoundUI() {
+        soundBtn.textContent = (muted ? '🔕 Sound: Off' : '🔔 Sound: On');
+        soundBtn.setAttribute('aria-pressed', String(!muted));
       }
 
-      // Fade animation
-      [stateLabel, timerEl, nextText, progressEl].forEach(el => {
-        el.classList.add('fade-in');
-        el.addEventListener('animationend', () => el.classList.remove('fade-in'), { once: true });
+      document.getElementById('fullscreen-btn').addEventListener('click', () => {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
       });
+
+      function setMorph() {
+        const duration = (Math.random() * 4 + 5).toFixed(2) + 's';
+        dot.style.setProperty('--morph-duration', duration);
+      }
+
+      function getBlocksForDay(date) {
+        const dayName = date.toLocaleString('en-US', { weekday: 'long' });
+        const raw = schedule[dayName] || [];
+        return raw.map(b => {
+          const sd = parseTime(b.start);
+          const ed = parseTime(b.end);
+          const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), sd.hour, sd.minute);
+          let end = new Date(start);
+          end.setHours(ed.hour, ed.minute);
+          if (end <= start) end.setDate(end.getDate() + 1);
+          return { name: b.name, start, end };
+        });
+      }
+
+      // 🔔 Track transitions to ring right when the block changes
+      let lastBlockName = null;
+
+      function ring() {
+        if (muted) return;
+        bell.currentTime = 0;
+        bell.play().catch(() => {});
+      }
+
+      function update() {
+        const now = getCST();
+        const blocks = getBlocksForDay(now);
+        const current = blocks.find(b => now >= b.start && now < b.end) || null;
+        let next;
+        if (current) {
+          next = blocks[(blocks.indexOf(current) + 1) % blocks.length];
+        } else {
+          next = blocks.find(b => b.start > now) || blocks[0];
+        }
+
+        const currentName = current ? current.name : 'Starting In';
+
+        // 🔔 Detect transition
+        if (lastBlockName !== null && currentName !== lastBlockName) {
+          ring();
+        }
+        lastBlockName = currentName;
+
+        stateLabel.textContent = currentName;
+        nextText.textContent = next ? next.name : '--';
+
+        // Theme based strictly on current block name
+        let name = current ? current.name : '';
+        let bgStart = '#1b2a18';
+        let bgEnd = '#22321f';
+        let accent = '#8fc93a';
+        if (name === 'Lunch') {
+          bgStart = '#006666'; bgEnd = '#009999'; accent = '#00ffe0';
+        } else if (name === 'Break') {
+          bgStart = '#ff6666'; bgEnd = '#ff9999'; accent = '#ff0066';
+        } else if (name === 'Long Break') {
+          bgStart = '#ff6666'; bgEnd = '#ff9999'; accent = '#ff0066';
+        }
+        root.style.setProperty('--bg-start', bgStart);
+        root.style.setProperty('--bg-end', bgEnd);
+        root.style.setProperty('--accent', accent);
+        document.body.style.background = `linear-gradient(120deg, ${bgStart}, ${bgEnd})`;
+
+        // Countdown
+        const targetTime = (current ? current.end : next.start).getTime();
+        let diff = Math.max(0, targetTime - now.getTime());
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        timerEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        // Progress bar
+        if (current) {
+          const total = current.end.getTime() - current.start.getTime();
+          const elapsed = now.getTime() - current.start.getTime();
+          progressEl.style.width = `${(elapsed / total) * 100}%`;
+        } else {
+          progressEl.style.width = '0%';
+        }
+
+        // Fade animation
+        [stateLabel, timerEl, nextText, progressEl].forEach(el => {
+          el.classList.add('fade-in');
+          el.addEventListener('animationend', () => el.classList.remove('fade-in'), { once: true });
+        });
+
+        setMorph();
+        requestAnimationFrame(update);
+      }
 
       setMorph();
-      requestAnimationFrame(update);
-    }
-
-    setMorph();
-    update();
-  })();
+      update();
+    })();
   </script>
 </body>
 </html>
